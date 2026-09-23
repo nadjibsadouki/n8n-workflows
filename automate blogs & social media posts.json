@@ -1,0 +1,709 @@
+{
+  "name": "automate blogs & social media posts",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        64
+      ],
+      "id": "3f578784-9026-496b-9121-3f430cbc6fef",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1GfYljSRBDPr6Bivwq_MGKOvg3xTEGzn6NADCWU-zhvo",
+          "mode": "list",
+          "cachedResultName": "AI Content Generation - Public",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GfYljSRBDPr6Bivwq_MGKOvg3xTEGzn6NADCWU-zhvo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Content-generation-topics",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GfYljSRBDPr6Bivwq_MGKOvg3xTEGzn6NADCWU-zhvo/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        -112
+      ],
+      "id": "9eb76dc5-1176-48d8-8125-dddc07a98eb4",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "PdM8gjQ2KgBd3ctj",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1GfYljSRBDPr6Bivwq_MGKOvg3xTEGzn6NADCWU-zhvo",
+          "mode": "list",
+          "cachedResultName": "AI Content Generation - Public",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GfYljSRBDPr6Bivwq_MGKOvg3xTEGzn6NADCWU-zhvo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Content-generation-topics",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GfYljSRBDPr6Bivwq_MGKOvg3xTEGzn6NADCWU-zhvo/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Pending"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -272,
+        64
+      ],
+      "id": "6d44abdd-c4ec-473f-ab51-9d3d136767db",
+      "name": "Fetch the topic",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1GfYljSRBDPr6Bivwq_MGKOvg3xTEGzn6NADCWU-zhvo",
+          "mode": "list",
+          "cachedResultName": "AI Content Generation - Public",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GfYljSRBDPr6Bivwq_MGKOvg3xTEGzn6NADCWU-zhvo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1435038686,
+          "mode": "list",
+          "cachedResultName": "AI-Prompts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GfYljSRBDPr6Bivwq_MGKOvg3xTEGzn6NADCWU-zhvo/edit#gid=1435038686"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -48,
+        64
+      ],
+      "id": "211d8aab-613b-4278-baed-b933a0424c63",
+      "name": "Fetch dynamic ai prompts",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all().map((item) => item.json);\n\nconst topicData = $(\"Fetch the topic\")\n  .all()\n  .map((item) => item.json)[0];\n\nconst updatedItems = items.map((item) => {\n  let systemPrompt = item[\"System Prompt\"];\n  let userPrompt = item[\"User Prompt\"];\n\n  for (const key in topicData) {\n    const regex = new RegExp(`{{${key}}}`, \"g\");\n\n    systemPrompt = systemPrompt.replace(regex, topicData[key]);\n    userPrompt = userPrompt.replace(regex, topicData[key]);\n  }\n\n  item[\"System Prompt\"] = systemPrompt;\n  item[\"User Prompt\"] = userPrompt;\n\n  return item;\n});\n\nreturn updatedItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        64
+      ],
+      "id": "a5f9b504-f0df-4aef-9701-7c4d57a4390c",
+      "name": "replace topic details in Ai prompts"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ec085058-e00b-4c95-9cac-f0fd3e58d7c7",
+              "leftValue": "={{ $json['Content Platform'] }}",
+              "rightValue": "Wordpress",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        400,
+        64
+      ],
+      "id": "b13be0f2-02ac-4110-8668-4aaf154a68d3",
+      "name": "if wordpress"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "llama3.2:1b",
+          "mode": "list",
+          "cachedResultName": "llama3.2:1b"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json['System Prompt'] }}"
+            },
+            {
+              "content": "={{ $json['User Prompt'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        624,
+        -32
+      ],
+      "id": "08f08e19-b29f-413f-9588-1665d19b541b",
+      "name": "generate blog & posts from topic",
+      "credentials": {
+        "ollamaApi": {
+          "id": "tlDdMJ7KsWv8K7Ul",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8e2e998f-5901-4077-a9a4-4f68fe95cd70",
+              "name": "=message content",
+              "value": "={{ $json.content.replaceAll('```html', '').replaceAll('```', '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        992,
+        -32
+      ],
+      "id": "bd2b3ec9-82a0-4ce2-b939-f2ecec2569b3",
+      "name": "clean up html"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.wordpress",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        -16
+      ],
+      "id": "5b7a6c26-cb4d-46b6-be4e-933b9aada516",
+      "name": "Create a post"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        992,
+        208
+      ],
+      "id": "19b8458a-4b5f-41ea-a6e7-cade4f0559ce",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "llama3.2:1b",
+          "mode": "list",
+          "cachedResultName": "llama3.2:1b"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json['System Prompt'] }}"
+            },
+            {
+              "content": "={{ $json['User Prompt'] }}\n{{ $json['message content'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        208
+      ],
+      "id": "550ba2a6-9925-4f52-95df-e386876a4eb3",
+      "name": "generate social media post",
+      "credentials": {
+        "ollamaApi": {
+          "id": "tlDdMJ7KsWv8K7Ul",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Merge').item.json['Content Platform'] }}",
+                    "rightValue": "Twitter",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "25474955-430c-4a8c-9070-c52d20368242"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "twitter"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "006cb300-bbb4-439d-b54b-cf40266820b0",
+                    "leftValue": "={{ $('Merge').item.json['Content Platform'] }}",
+                    "rightValue": "Linkedin",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "linkedin"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4fe184a6-a86f-4eb6-b01c-6300336c94ad",
+                    "leftValue": "={{ $('Merge').item.json['Content Platform'] }}",
+                    "rightValue": "Facebook",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "facebook"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5562a290-2b3d-4388-97ed-75f20d9b4a3c",
+                    "leftValue": "={{ $('Merge').item.json['Content Platform'] }}",
+                    "rightValue": "YouTube",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "youtube"
+            }
+          ]
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1584,
+        208
+      ],
+      "id": "4c94cfa2-c101-4e5f-bf98-9ae2aa03e562",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.message.content.split(\"Tweet 2:\")[0].replace(\"Here are 7 tweets that summarize the key points from the blog post on 10 Productivity Hacks Using n8n:\\n\\nTweet 1:\\n\",\"\").trim() }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        1808,
+        80
+      ],
+      "id": "b048a466-a876-47ab-aae0-b965a562f278",
+      "name": "Create Tweet",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "X1ZMSHD1QfcuV9qp",
+          "name": "X account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.message.content.split(\"Tweet 2:\")[0].replace(\"Here are 7 tweets that summarize the key points from the blog post on 10 Productivity Hacks Using n8n:\\n\\nTweet 1:\\n\",\"\").trim() }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        208
+      ],
+      "id": "a68d8ec0-1821-4d0c-ab99-8812da2d935a",
+      "name": "Create a post1"
+    },
+    {
+      "parameters": {
+        "folderId": "1FguAynrd0I3Qj-VEGnnnrj0FSbw87J9X",
+        "title": "=youtube video script : {{ $('Fetch the topic').item.json.topic }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1808,
+        416
+      ],
+      "id": "8fc6dda4-2324-42cc-a6e9-b81d84367b21",
+      "name": "create new google document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "DRhlOLQOcQaCKyVR",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Switch').item.json.content }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2032,
+        416
+      ],
+      "id": "af5ab588-aa86-4e33-a8cc-e18c4e6e4cfd",
+      "name": "save youyube video script",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "DRhlOLQOcQaCKyVR",
+          "name": "Google Docs account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "generate social media post": [
+      {
+        "json": {
+          "content": "Here are 7 tweets that summarize the key points from the blog post on 10 Productivity Hacks Using n8n:\n\nTweet 1:\nBoost your productivity with n8n! Discover 10 hacks to automate tasks, workflows, and macros to streamline your workflow and save time. Read the full article to learn how n8n can help you work smarter, not harder. #n8n #productivityhacks #automate\n\nTweet 2:\nStruggling to prioritize tasks? n8n's workflow feature helps you automate tasks and workflows, so you can focus on high-priority tasks. Learn how to prioritize tasks like a pro with n8n! #n8n #productivity #taskmanagement\n\nTweet 3:\nReady to automate repetitive tasks? n8n's macro feature makes it easy to automate tasks like data entry, reporting, and testing. Discover how n8n can automate tasks and save time! #n8n #productivity #automation\n\nTweet 4:\nWant to integrate n8n with other tools and services? n8n has got you covered! From Google Calendar to Trello, n8n integrates with a wide range of tools. Learn how to integrate n8n with other tools and services. #n8n #integrations #productivity\n\nTweet 5:\nScale your productivity with n8n! Learn how to create a centralized workflow, use n8n's scalability features, and monitor and optimize your workflows. #n8n #productivity #scalability\n\nTweet 6:\nGot questions about n8n? Here are some frequently asked questions about n8n's workflow, macro, and integration features. Check out the answers and learn more about n8n! #n8n #productivity #FAQ\n\nTweet 7:\nReady to take your productivity to the next level? n8n is here to help! Discover how n8n can help you automate tasks, workflows, and macros to save time and boost productivity. Read the full article to learn more. #n8n #productivityhacks #automate"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "content": "Here's a LinkedIn post based on the provided blog post content:\n\n**10 Productivity Hacks Using n8n: Boost Your Workflow Efficiency**\n\nAs a seasoned productivity enthusiast, I'm excited to share 10 productivity hacks using n8n that can help you work smarter, not harder. In this article, we'll explore how n8n can help you streamline your workflows, automate repetitive tasks, and scale your productivity.\n\nHere are the 10 productivity hacks using n8n that you can apply in your own journey:\n\n1. **Prioritize tasks with n8n's workflow**: Automate tasks and workflows to focus on high-priority tasks.\n2. **Automate repetitive tasks with n8n's macro**: Use n8n's macro feature to automate repetitive tasks and free up more time for high-priority tasks.\n3. **Integrate n8n with Google Calendar**: Automate recurring tasks and events with n8n and Google Calendar.\n4. **Connect n8n to Trello**: Automate tasks and workflows based on Trello boards and cards.\n5. **Use IFTTT to trigger n8n workflows**: Connect n8n to IFTTT to automate workflows based on specific conditions and recipes.\n6. **Create a centralized workflow**: Use n8n to create a centralized workflow that can be shared across your team or organization.\n7. **Use n8n's scalability features**: Leverage n8n's scalability features, such as distributed architecture and load balancing, to handle large volumes of traffic.\n8. **Monitor and optimize your workflows**: Regularly monitor your workflows and macros to identify bottlenecks and optimize performance.\n9. **Automate data entry**: Use n8n to automate data entry tasks by integrating with popular data sources.\n10. **Automate testing**: Use n8n to automate testing tasks by integrating with popular testing frameworks.\n\n**Real-World Examples and Tips**\n\n*   Automate data entry tasks using n8n and integrate with popular data sources, such as Google Sheets or Microsoft Excel.\n*   Automate reporting tasks using n8n and integrate with popular reporting tools, such as Tableau or Power BI.\n*   Automate testing tasks using n8n and integrate with popular testing frameworks, such as JUnit or Pytest.\n\n**FAQs**\n\n*   Q: How do I integrate n8n with Google Calendar?\nA: To integrate n8n with Google Calendar, follow these steps:\n*   Install the \"Google Calendar\" plugin in your n8n instance.\n*   Define the input parameters, triggers, and execution conditions for your workflow.\n*   Use the \"Calendar\" field to trigger your workflow based on Google Calendar events.\n\n**Conclusion**\n\nn8n is a powerful tool that can help you streamline your workflows, automate repetitive tasks, and scale your productivity. By applying these 10 productivity hacks using n8n, you can take your productivity to the next level and achieve more in less time. What are your favorite productivity hacks using n8n? Share with us in the comments below!"
+        },
+        "pairedItem": {
+          "item": 1
+        }
+      },
+      {
+        "json": {
+          "content": "Here is the carousel caption for the blog post:\n\n**Slide 1: Hook**\nUnlock the Power of Automation: 10 Productivity Hacks Using n8n\n\n**Slide 2: Key Insight 1**\nStreamline Your Workflow with n8n's Workflow Feature\n\n*   Create a new workflow by selecting the \"workflow\" option from the top menu bar.\n*   Add tasks to your workflow using the \"Add Task\" button. Select the task you want to automate and click \"Add.\"\n*   Configure the task's settings to match your workflow's requirements. For example, you can set a specific user to run the task, assign it a specific priority, and define the execution time.\n\n**Slide 3: Key Insight 2**\nMacro Magic: Automate Repetitive Tasks with n8n's Macro Feature\n\n*   Install the \"Macro\" plugin in your n8n instance.\n*   Define the macro's settings, including the input parameters, triggers, and execution conditions.\n*   Write your macro logic using n8n's API. You can use loops, conditional statements, and functions to automate repetitive tasks.\n\n**Slide 4: Key Insight 3**\nIntegrate n8n with Other Tools and Services for Enhanced Productivity\n\n*   Integrate n8n with Google Calendar to automate recurring tasks and events.\n*   Connect n8n to Trello to automate tasks and workflows based on Trello boards and cards.\n*   Use IFTTT (If This Then That) to trigger n8n workflows based on specific conditions and recipes.\n\n**Slide 5: Key Insight 4**\nScale Your Productivity with n8n's Scalability Features\n\n*   Create a centralized workflow that can be shared across your team or organization.\n*   Use n8n's scalability features, such as distributed architecture and load balancing, to handle large volumes of traffic.\n*   Regularly monitor your workflows and macros to identify bottlenecks and optimize performance.\n\n**Slide 6: Key Insight 5**\nReal-World Examples and Tips for Boosting Productivity\n\n*   Automate data entry tasks by integrating with popular data sources, such as Google Sheets or Microsoft Excel.\n*   Automate reporting tasks by integrating with popular reporting tools, such as Tableau or Power BI.\n*   Automate testing tasks by integrating with popular testing frameworks, such as JUnit or Pytest.\n\n**Slide 7: CTA**\nTake Your Productivity to the Next Level with n8n\n\n*   Tag someone who should know this: @YourName\n*   DM us to learn more about n8n's productivity hacks and features"
+        },
+        "pairedItem": {
+          "item": 2
+        }
+      },
+      {
+        "json": {
+          "content": "**Video Title:** 10 Productivity Hacks Using n8n: Unlock Your Workflow Potential\n\n**Hook (first 10 seconds):**\n(0:50)\nHey everyone, welcome back to my channel! Are you tired of feeling overwhelmed by your to-do list? Do you wish you had more time for the things that matter most to you? Well, I've got some great news for you! Today, I'm sharing 10 productivity hacks using n8n, a powerful automation tool that can help you streamline your workflow and boost your productivity.\n\n**Section 1: Prioritizing Tasks with n8n's Workflow (0:50 - 1:30)**\n\n(0:50)\nIn this section, we're going to explore how to prioritize tasks using n8n's workflow feature. By automating tasks and workflows, n8n helps you focus on the most important tasks first. Here's how:\n\n*   Create a new n8n workflow by selecting the \"workflow\" option from the top menu bar.\n*   Add tasks to your workflow using the \"Add Task\" button. Select the task you want to automate and click \"Add.\"\n*   Configure the task's settings to match your workflow's requirements. For example, you can set a specific user to run the task, assign it a specific priority, and define the execution time.\n\n**Section 2: Automating Repetitive Tasks with n8n's Macro (1:30 - 2:30)**\n\n(1:30)\nIn this section, we're going to explore how to automate repetitive tasks using n8n's macro feature. By leveraging n8n's macro feature, you can automate these tasks and free up more time for high-priority tasks. Here's how:\n\n*   Install the \"Macro\" plugin in your n8n instance.\n*   Create a new macro by clicking the \"Macro\" button on the top menu bar.\n*   Define the macro's settings, including the input parameters, triggers, and execution conditions.\n*   Write your macro logic using n8n's API. You can use loops, conditional statements, and functions to automate repetitive tasks.\n\n**Section 3: Integrating n8n with Other Tools and Services (2:30 - 3:30)**\n\n(2:30)\nIn this section, we're going to explore how to integrate n8n with other tools and services to enhance productivity. Here are a few examples:\n\n*   **Google Calendar**: Integrate n8n with Google Calendar to automate recurring tasks and events.\n*   **Trello**: Connect n8n to Trello to automate tasks and workflows based on Trello boards and cards.\n*   **IFTTT (If This Then That)**: Use IFTTT to trigger n8n workflows based on specific conditions and recipes.\n\n**Section 4: Scaling Your Productivity with n8n (3:30 - 4:30)**\n\n(3:30)\nIn this section, we're going to explore how to scale your productivity with n8n. Here are a few strategies to help you do so:\n\n*   **Create a centralized workflow**: Create a centralized workflow that can be shared across your team or organization.\n*   **Use n8n's scalability features**: Leverage n8n's scalability features, such as distributed architecture and load balancing, to handle large volumes of traffic.\n*   **Monitor and optimize**: Regularly monitor your workflows and macros to identify bottlenecks and optimize performance.\n\n**Section 5: Real-World Examples and Tips (4:30 - 5:30)**\n\n(4:30)\nIn this section, we're going to explore some real-world examples and tips for using n8n to boost productivity. Here are a few examples:\n\n*   **Automating data entry**: Use n8n to automate data entry tasks by integrating with popular data sources, such as Google Sheets or Microsoft Excel.\n*   **Automating reporting**: Use n8n to automate reporting tasks by integrating with popular reporting tools, such as Tableau or Power BI.\n*   **Automating testing**: Use n8n to automate testing tasks by integrating with popular testing frameworks, such as JUnit or Pytest.\n\n**FAQ**\n\n### Q: How do I integrate n8n with Google Calendar?\n\nA: To integrate n8n with Google Calendar, follow these steps:\n\n*   Install the \"Google Calendar\" plugin in your n8n instance.\n*   Define the input parameters, triggers, and execution conditions for your workflow.\n*   Use the \"Calendar\" field to trigger your workflow based on Google Calendar events.\n\n### Q: How do I automate repetitive tasks using n8n's macro feature?\n\nA: To automate repetitive tasks using n8n's macro feature, follow these steps:\n\n*   Install the \"Macro\" plugin in your n8n instance.\n*   Define the macro's settings, including the input parameters, triggers, and execution conditions.\n*   Write your macro logic using n8n's API. You can use loops, conditional statements, and functions to automate repetitive tasks.\n\n### Q: How do I create a centralized workflow using n8n?\n\nA: To create a centralized workflow using n8n, follow these steps:\n\n*   Create a new n8n workflow by selecting the \"workflow\" option from the top menu bar.\n*   Add tasks to your workflow using the \"Add Task\" button. Select the task you want to automate and click \"Add.\"\n*   Configure the task's settings to match your workflow's requirements. For example, you can set a specific user to run the task, assign it a specific priority, and define the execution time."
+        },
+        "pairedItem": {
+          "item": 3
+        }
+      }
+    ],
+    "generate blog & posts from topic": [
+      {
+        "json": {
+          "content": "# 10 Productivity Hacks Using n8n\n\n## Introduction\n\nIn the fast-paced world of productivity, every minute counts. With the rise of automation and AI-powered tools, n8n has emerged as a game-changer in streamlining workflows and boosting efficiency. As a seasoned productivity enthusiast, I'm excited to share 10 productivity hacks using n8n that you can apply in your own journey. In this article, we'll explore how n8n can help you work smarter, not harder.\n\n## Section 1: Prioritizing Tasks with n8n's Workflow\n\nWhen faced with a long to-do list, it's easy to feel overwhelmed. That's where n8n's workflow comes in. By automating tasks and workflows, n8n helps you prioritize tasks that require your attention. Here's how:\n\n*   Create a new n8n workflow by selecting the \" workflow\" option from the top menu bar.\n*   Add tasks to your workflow using the \"Add Task\" button. Select the task you want to automate and click \"Add.\"\n*   Configure the task's settings to match your workflow's requirements. For example, you can set a specific user to run the task, assign it a specific priority, and define the execution time.\n*   To prioritize tasks within your workflow, use the \"Priority\" field. You can create a custom priority system using n8n's \"Priority\" field and add conditions to ensure that tasks are executed in the correct order.\n\n## Section 2: Automating Repetitive Tasks with n8n's Macro\n\nRepetitive tasks can be a productivity killer. However, by leveraging n8n's macro feature, you can automate these tasks and free up more time for high-priority tasks. Here's how:\n\n*   Install the \"Macro\" plugin in your n8n instance.\n*   Create a new macro by clicking the \"Macro\" button on the top menu bar.\n*   Define the macro's settings, including the input parameters, triggers, and execution conditions.\n*   Write your macro logic using n8n's API. You can use loops, conditional statements, and functions to automate repetitive tasks.\n\n## Section 3: Integrating n8n with Other Tools and Services\n\nIn addition to workflows and macros, n8n can also integrate with other tools and services to enhance productivity. Here are a few examples:\n\n*   **Google Calendar**: Integrate n8n with Google Calendar to automate recurring tasks and events.\n*   **Trello**: Connect n8n to Trello to automate tasks and workflows based on Trello boards and cards.\n*   **IFTTT (If This Then That)**: Use IFTTT to trigger n8n workflows based on specific conditions and recipes.\n\n## Section 4: Scaling Your Productivity with n8n\n\nAs your productivity needs grow, it's essential to scale your workflows and macros to handle the increased load. Here are a few strategies to help you do so:\n\n*   **Create a centralized workflow**: Create a centralized workflow that can be shared across your team or organization.\n*   **Use n8n's scalability features**: Leverage n8n's scalability features, such as distributed architecture and load balancing, to handle large volumes of traffic.\n*   **Monitor and optimize**: Regularly monitor your workflows and macros to identify bottlenecks and optimize performance.\n\n## Section 5: Real-World Examples and Tips\n\n*   ** automating data entry**: Use n8n to automate data entry tasks by integrating with popular data sources, such as Google Sheets or Microsoft Excel.\n*   ** automating reporting**: Use n8n to automate reporting tasks by integrating with popular reporting tools, such as Tableau or Power BI.\n*   ** automating testing**: Use n8n to automate testing tasks by integrating with popular testing frameworks, such as JUnit or Pytest.\n\n## FAQ\n\n### Q: How do I integrate n8n with Google Calendar?\n\nA: To integrate n8n with Google Calendar, follow these steps:\n\n*   Install the \"Google Calendar\" plugin in your n8n instance.\n*   Define the input parameters, triggers, and execution conditions for your workflow.\n*   Use the \"Calendar\" field to trigger your workflow based on Google Calendar events.\n\n### Q: How do I automate repetitive tasks using n8n's macro feature?\n\nA: To automate repetitive tasks using n8n's macro feature, follow these steps:\n\n*   Install the \"Macro\" plugin in your n8n instance.\n*   Define the macro's settings, including the input parameters, triggers, and execution conditions.\n*   Write your macro logic using n8n's API. You can use loops, conditional statements, and functions to automate repetitive tasks.\n\n### Q: How do I create a centralized workflow using n8n?\n\nA: To create a centralized workflow using n8n, follow these steps:\n\n*   Create a new n8n workflow by selecting the \"workflow\" option from the top menu bar.\n*   Add tasks to your workflow using the \"Add Task\" button. Select the task you want to automate and click \"Add.\"\n*   Configure the task's settings to match your workflow's requirements. For example, you can set a specific user to run the task, assign it a specific priority, and define the execution time."
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Fetch the topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch the topic": {
+      "main": [
+        [
+          {
+            "node": "Fetch dynamic ai prompts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch dynamic ai prompts": {
+      "main": [
+        [
+          {
+            "node": "replace topic details in Ai prompts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "replace topic details in Ai prompts": {
+      "main": [
+        [
+          {
+            "node": "if wordpress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if wordpress": {
+      "main": [
+        [
+          {
+            "node": "generate blog & posts from topic",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate blog & posts from topic": {
+      "main": [
+        [
+          {
+            "node": "clean up html",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clean up html": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "generate social media post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate social media post": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Create Tweet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a post1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "create new google document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create new google document": {
+      "main": [
+        [
+          {
+            "node": "save youyube video script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "1f204aba-38ca-46b2-bb3f-ff37d9003796",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "41376987dc5a35d8cca2e5ad4a04e0a383b90a40c52bd088ff4a04194be204b1"
+  },
+  "nodeGroups": [],
+  "id": "eP9hfnUMjJbMrQIA",
+  "tags": []
+}
