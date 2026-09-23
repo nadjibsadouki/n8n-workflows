@@ -1,0 +1,1693 @@
+{
+  "name": "ecommerce-ai-marketing-agent",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -784,
+        -368
+      ],
+      "id": "713c3be8-035e-4038-b3dc-7748d3168b52",
+      "name": "Telegram Trigger",
+      "webhookId": "0b181605-dd8f-47f0-bc26-415bbe078f22",
+      "credentials": {
+        "telegramApi": {
+          "id": "4d4eWhAxI0FiCy8b",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es le routeur d'intelligence d'un E-Commerce Command Center.\nUn commerçant t'envoie ce message :\n\"{{ $json.message.text }}\"\n\nIdentifie l'intention parmi cette liste exacte :\n- DASHBOARD (demande de vue globale, résumé du jour, /dashboard)\n- STOCK (ruptures, inventaire, réapprovisionnement)\n- VENTES (pourquoi baisse, analyse du CA, performance)\n- CLIENTS (meilleurs clients, churn, clients inactifs)\n- AVIS (retours, plaintes, satisfaction)\n- AUTRE (question générale ou non reconnue)\n-CONSEILS(si l utilisateur veut des conseils, recherches en dehors de la boutique pour u  recherche de produit, recherche de clients, ...)\n\nRéponds UNIQUEMENT au format JSON strict suivant :\n{\n  \"intention\": \"DASHBOARD\",\n  \"detail\": \"Résumé de ce qui est demandé\"\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        -368
+      ],
+      "id": "6e139839-b729-4abe-8f89-63b1be62ef8a",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yi1xkGxqw7KiuBlx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Récupère le texte brut renvoyé par Gemini\nlet rawText = $input.first().json.content.parts[0].text;\n\n// Nettoie les balises markdown si Gemini en ajoute (ex: ```json)\nrawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();\n\n// Transforme la chaîne en véritable objet JSON\nconst parsed = JSON.parse(rawText);\n\nreturn [\n  {\n    json: {\n      intention: parsed.intention,\n      detail: parsed.detail\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        -368
+      ],
+      "id": "982f4216-8dba-4e50-b2b8-0b3816f67a82",
+      "name": "structurer la reponse"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intention }}",
+                    "rightValue": "DASHBOARD",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "335e7376-4186-4319-b621-684d8a6e9594"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "dashboard"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "40864f35-536e-4a68-873b-015e60b0cab2",
+                    "leftValue": "={{ $json.intention }}",
+                    "rightValue": "STOCK",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "stock"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ae8d59ff-1c33-4dbd-aa93-dcd2a2572564",
+                    "leftValue": "={{ $json.intention }}",
+                    "rightValue": "VENTES",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ventes"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "46976d1a-ca31-485c-8261-10bd6ebb5206",
+                    "leftValue": "={{ $json.intention }}",
+                    "rightValue": "CLIENTS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "clients"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b6ec07ef-163b-4134-9af9-463f65fa7246",
+                    "leftValue": "={{ $json.intention }}",
+                    "rightValue": "AVIS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "avis"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8d67e1cf-1430-4049-9a19-c4fb99356bc0",
+                    "leftValue": "={{ $json.intention }}",
+                    "rightValue": "CONSEILS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "conseils"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        16,
+        -416
+      ],
+      "id": "49a9ee3f-4992-4142-afbb-96901c847d26",
+      "name": "distinguer le type de reponse"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "getAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.shopify",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -912
+      ],
+      "id": "a51543b4-78bd-4a99-b170-f470d400353b",
+      "name": "recuperation des commandes",
+      "alwaysOutputData": true,
+      "credentials": {
+        "shopifyOAuth2Api": {
+          "id": "vyXAOXMaFkyBMhw9",
+          "name": "Shopify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es un assistant analytique e-commerce pour une boutique de streetwear.\n\nVoici les données brutes des commandes issues de Shopify :\n{{ JSON.stringify($('recuperation des commandes').all().map(i => i.json)) }}\n\nDemande de l'utilisateur :\n{{ $('Telegram Trigger').item.json.message.text }}\n\nCONSIGNES DE RÉPONSE :\n1. Si des commandes réelles sont présentes dans les données :\n   - Présente un résumé clair : Chiffre d'affaires total, nombre de commandes, statut de livraison.\n   - Détaille les articles les plus vendus.\n\n2. Si la liste des commandes est vide (ex: [] ou aucune donnée trouvée) :\n   - Indique clairement et poliment : \"📊 Tableau de bord : 0 commande enregistrée pour le moment.\"\n   - Affiche un état du système : \"Boutique connectée avec succès à l'API Shopify (prête pour les ventes).\"\n   - Ajoute une section \"Simulation / Exemple de tableau de bord\" montrant à quoi ressemblera le rapport une fois les premières ventes tombées (ex: 3 commandes tests de t-shirts oversized, CA fictif, panier moyen).\n   - Ajoute 1 conseil court pour lancer les premières ventes.\n\nSTYLE :\n- Format adapté à Telegram : emojis, puces, texte aéré en gras.\n- Reste concis, direct et professionnel."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        528,
+        -912
+      ],
+      "id": "fb731d4b-3347-41fc-be3a-3b3e0ada74d4",
+      "name": "analyser les commandes",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yi1xkGxqw7KiuBlx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        -912
+      ],
+      "id": "14de159b-7fc5-4dd0-8fd3-85a363a9809a",
+      "name": "repondre au message",
+      "webhookId": "66bc01ca-167d-4011-852e-2c9779490f76",
+      "credentials": {
+        "telegramApi": {
+          "id": "4d4eWhAxI0FiCy8b",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "product",
+        "operation": "getAll",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.shopify",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -720
+      ],
+      "id": "bee82ac6-e0d2-443b-a763-56d400364603",
+      "name": "recuperer les produits",
+      "alwaysOutputData": true,
+      "credentials": {
+        "shopifyOAuth2Api": {
+          "id": "vyXAOXMaFkyBMhw9",
+          "name": "Shopify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        -720
+      ],
+      "id": "46717a1d-45e8-4cd0-bf12-6fda8afd9217",
+      "name": "repondre au message1",
+      "webhookId": "66bc01ca-167d-4011-852e-2c9779490f76",
+      "credentials": {
+        "telegramApi": {
+          "id": "4d4eWhAxI0FiCy8b",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es l'assistant de gestion d'inventaire pour une marque e-commerce de streetwear.\n\nVoici les données des produits récupérées depuis Shopify :\n{{ JSON.stringify($('recuperer les produits').all().map(i => i.json)) }}\n\nDemande de l'utilisateur :\n{{ $('Telegram Trigger').item.json.message.text }}\n\nCONSIGNES :\n1. Si des produits et leurs variantes sont trouvés :\n   - Présente le récapitulatif du stock par produit, couleur et taille.\n   - Mets une alerte claire ⚠️ pour les variantes avec un stock faible (moins de 5 unités) ou en rupture (0 unité).\n   - Indique le total d'unités disponibles en stock.\n\n2. Si la liste est vide (aucun produit ou catalogue non renseigné) :\n   - Indique clairement : \"📦 Inventaire : Aucun produit trouvé sur la boutique.\"\n   - Affiche un exemple de simulation réaliste pour une collection streetwear (ex: T-shirt Oversized Noir / Blanc avec tailles S, M, L, XL et statuts de stock fictifs).\n   - Ajoute un court conseil logistique sur la gestion du print-on-demand et des réassorts.\n\nSTYLE :\n- Format adapté à Telegram : emojis, puces, texte aéré en gras.\n- Reste concis, propre et professionnel (aucun code JSON brut)."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        528,
+        -720
+      ],
+      "id": "818e3542-a05c-42de-8701-c4f033e34c40",
+      "name": "analyser les produits",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yi1xkGxqw7KiuBlx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "getAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.shopify",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -528
+      ],
+      "id": "518fdc65-2827-4dc9-a807-e6a53cc9613b",
+      "name": "recuperer les ventes1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "shopifyOAuth2Api": {
+          "id": "vyXAOXMaFkyBMhw9",
+          "name": "Shopify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es le directeur financier et commercial d'une marque e-commerce streetwear.\n\nDonnées reçues de Shopify :\n{{ JSON.stringify($('recuperer les ventes1').all().map(i => i.json)) }}\n\nDemande de l'utilisateur :\n{{ $('Telegram Trigger').item.json.message.text }}\n\nRÈGLES D'ANALYSE :\n1. Si des commandes payées sont détectées :\n   - Calcule le CA total (TTC), le nombre de commandes et le panier moyen (AOV).\n   - Détaille la répartition des devises et moyens de paiement.\n\n2. Si aucune commande / liste vide (cas actuel) :\n   - Indique : \"📈 Rapport Financier : 0 vente enregistrée pour le moment.\"\n   - Affiche un \"Objectif & Projection de lancement\" réaliste (ex: 20 ventes à 35€ = 700€ de CA).\n   - Ajoute 2 actions concrètes pour déclencher la première commande (ex: offre de bienvenue avec code promo, pub ciblée sur un produit héro).\n\nFORMAT :\n- Rendu spécial Telegram : emojis, puces, sections en gras.\n- Reste encourageant, concis et pro. Aucun code JSON brut."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        528,
+        -528
+      ],
+      "id": "09fd3418-3041-4081-b89a-346b08559df8",
+      "name": "analyser les ventes",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yi1xkGxqw7KiuBlx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        -528
+      ],
+      "id": "ff33cc32-0590-499a-8c1c-bb566a04a8f9",
+      "name": "repondre au message2",
+      "webhookId": "66bc01ca-167d-4011-852e-2c9779490f76",
+      "credentials": {
+        "telegramApi": {
+          "id": "4d4eWhAxI0FiCy8b",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es le directeur CRM et responsable fidélisation d'une marque e-commerce de streetwear haut de gamme.\n\nDonnées reçues :\n{{ JSON.stringify($('recuperer les clients').all().map(i => i.json)) }}\n\nDemande de l'utilisateur :\n{{ $('Telegram Trigger').item.json.message.text }}\n\nINSTRUCTIONS D'ANALYSE :\n1. Si des données clients ou des commandes sont trouvées :\n   - Indique le nombre de profils répertoriés.\n   - Détaille les clients réguliers et leurs montants dépensés.\n\n2. Si les données sont vides ou non accessibles (cas actuel de lancement) :\n   - Affiche clairement : \"👥 Répertoire Clients : Aucun client enregistré pour le moment.\"\n   - Crée une courte projection CRM de lancement :\n     * Profil VIP cible : fan de streetwear, 2 commandes/an, panier moyen ~45€.\n     * Segment Newsletter : prospects chauds à convertir.\n   - Propose 2 actions concrètes d'acquisition pour collecter les premiers emails :\n     1. Offre de bienvenue pop-up (-10% sur la 1re commande).\n     2. Accès exclusif en avant-première au prochain drop.\n\nFORMAT & STYLE :\n- Optimisé pour Telegram : emojis, puces claires, texte en gras.\n- Direct, percutant et professionnel. Aucun bloc de code JSON brut."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        -368
+      ],
+      "id": "57f0ef14-fae8-41ba-b3ce-c003850f487b",
+      "name": "analyser les clients",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yi1xkGxqw7KiuBlx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://cng8ba-09.myshopify.com/admin/api/2024-01/customers.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "shopifyOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        304,
+        -368
+      ],
+      "id": "83449238-5e10-490a-bfc2-983040a8f404",
+      "name": "recuperer les clients",
+      "alwaysOutputData": true,
+      "credentials": {
+        "shopifyOAuth2Api": {
+          "id": "vyXAOXMaFkyBMhw9",
+          "name": "Shopify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        -368
+      ],
+      "id": "e6e96d0b-c21e-42c0-b33b-9ed46661e668",
+      "name": "repondre au message3",
+      "webhookId": "66bc01ca-167d-4011-852e-2c9779490f76",
+      "credentials": {
+        "telegramApi": {
+          "id": "4d4eWhAxI0FiCy8b",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es l'assistant IA exécutif dédié à la gestion d'une marque e-commerce streetwear.\n\nMessage reçu de l'utilisateur :\n{{ $('Telegram Trigger').item.json.message.text }}\n\nRÔLE & OBJECTIFS :\n1. Si l'utilisateur te salue ou demande de l'aide :\n   - Réponds poliment et présente ce que tu peux faire.\n   - Propose les 4 commandes clés :\n     📊 *dashboard* : vue d'ensemble de la boutique et commandes récentes.\n     📦 *stock* : statut des articles et gestion des stocks.\n     💰 *ventes* : bilan financier, chiffre d'affaires et objectifs.\n     👥 *clients* : statistiques clients et suggestions CRM.\n\n2. Si l'utilisateur pose une question e-commerce ou marketing générale :\n   - Donne une réponse concise, experte et orientée streetwear/mode.\n\n3. Si la demande est hors-sujet ou incompréhensible :\n   - Indique brièvement que tu es configuré pour piloter la boutique et rappelle les 4 thématiques.\n\nSTYLE :\n- Format Telegram : emojis, listes à puces, texte aéré.\n- Ton dynamique, pro et direct. Aucun code brut."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        288,
+        -160
+      ],
+      "id": "205451e2-edf2-4781-99b8-ba42e3196f2b",
+      "name": "analyser le message",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yi1xkGxqw7KiuBlx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        624,
+        -160
+      ],
+      "id": "1521aa91-5c4e-45ce-b385-7cb40337331a",
+      "name": "repondre au message4",
+      "webhookId": "66bc01ca-167d-4011-852e-2c9779490f76",
+      "credentials": {
+        "telegramApi": {
+          "id": "4d4eWhAxI0FiCy8b",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es le directeur commercial et consultant e-commerce d'une marque streetwear.\n\nVoici l'analyse des ventes qui vient d'être effectuée :\n{{ $json.content.parts[0].text }}\n\nDemande initiale de l'utilisateur :\n{{ $('Telegram Trigger').item.json.message.text }}\n\nMISSION :\nÀ partir de ce constat sur les ventes, propose un plan stratégique d'optimisation en 3 points concrets pour dynamiser la boutique :\n\n💡 1. OPTIMISATION DU PANIER MOYEN\n- Proposition de bundling ou d'offres par lot (ex: pack 2 t-shirts, accessoire offert à partir d'un montant).\n\n🎯 2. PLAN D'ACQUISITION & VISIBILITÉ\n- Une idée de campagne organique percutante (ex: format court TikTok/Reels montrant les détails et le drop).\n- Mise en avant de l'urgence/rareté pour convertir les premiers acheteurs.\n\n👥 3. CONVERSION & RÉASSURANCE\n- Un point clé à vérifier sur le site (badges de réassurance, clarté de la livraison, popup de bienvenue).\n\nFORMAT :\n- Direct, percutant, structuré avec des emojis et du gras pour Telegram.\n- Reste concis et immédiatement actionnable. Pas de jargon inutile."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        160
+      ],
+      "id": "15c8baa2-084f-4965-9d58-8aaa55f615ce",
+      "name": "conseils",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yi1xkGxqw7KiuBlx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.content.parts[0].text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🚀 Oui, trouver un produit gagnant",
+                    "additionalFields": {
+                      "url": "={{ $execution.resumeUrl }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        432,
+        160
+      ],
+      "id": "5b990cd2-81d4-45fc-ad57-b9ba45a1b13e",
+      "name": "le choix de passage a l'étape de recherche des produits",
+      "webhookId": "66bc01ca-167d-4011-852e-2c9779490f76",
+      "credentials": {
+        "telegramApi": {
+          "id": "4d4eWhAxI0FiCy8b",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es un expert en stratégie de marque et directeur artistique e-commerce.\n\nVoici les données brutes des produits actuellement en ligne sur la boutique :\n{{ JSON.stringify($('recuperer les produits').all().map(p => ({\n    titre: p.json.title,\n    type: p.json.product_type,\n    tags: p.json.tags,\n    description: p.json.body_html,\n    prix: p.json.variants ? p.json.variants[0]?.price : null\n}))) }}\n\nMISSION :\nAnalyse en profondeur le catalogue pour dresser l'ADN exact de la boutique.\n\nSTRUCTURE DU RETOUR ATTENDU (au format JSON strict) :\n{\n  \"niche_principale\": \"Nom précis de la niche (ex: Streetwear graphique / Minimaliste urbain)\",\n  \"univers_et_style\": \"Brève description du positionnement stylistique\",\n  \"client_cible\": \"Persona type (âge, style de vie, passions)\",\n  \"gamme_prix_moyen\": \"Prix moyen observé et positionnement (entrée de gamme / premium)\",\n  \"mots_cles_cles\": [\"mot1\", \"mot2\", \"mot3\", \"mot4\"]\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        1168,
+        160
+      ],
+      "id": "1681175d-c213-4f25-be97-a598700ee914",
+      "name": "distinguer la niche",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yi1xkGxqw7KiuBlx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "product",
+        "operation": "getAll",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.shopify",
+      "typeVersion": 1,
+      "position": [
+        912,
+        160
+      ],
+      "id": "30020d7d-eb51-4b43-a12b-1583226bcc0b",
+      "name": "recuperer les produits1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "shopifyOAuth2Api": {
+          "id": "vyXAOXMaFkyBMhw9",
+          "name": "Shopify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        656,
+        160
+      ],
+      "id": "44741403-b383-4354-84df-4f91334060d4",
+      "name": "attendre  la reponse de l'utilisateur",
+      "webhookId": "18130cd2-e58d-4bfb-9198-4f0dc2bac925"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1536,
+        160
+      ],
+      "id": "992aff36-9c29-4bc5-83a8-aaa8449c4432",
+      "name": "confirmer la niche",
+      "webhookId": "430e4b65-08b3-4398-b3e3-917b50d047cf",
+      "credentials": {
+        "telegramApi": {
+          "id": "4d4eWhAxI0FiCy8b",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es un chasseur de tendances e-commerce et expert en sourcing textile streetwear.\n\nVoici l'analyse de la niche de la boutique :\n{{ $('distinguer la niche').item.json.content.parts[0].text }}\n\nMISSION :\nEn te basant strictement sur cet univers de marque, propose 3 idées de produits gagnants à fort potentiel de vente, avec une stratégie de prix et de sourcing.\n\nSTRUCTURE DE LA RÉPONSE :\n\n🎯 TOP 3 DES PRODUITS RECOMMANDÉS\n\nPour chaque produit (Produit 1, Produit 2, Produit 3) :\n- 🏷️ Nom & Concept : Description précise de la pièce (coupe, matière, détail visuel qui fait la différence).\n- 🔥 Pourquoi ce produit cartonne : Argument tendance (effet TikTok/Reels, rareté, forte demande actuelle).\n- 💰 Analyse financière :\n  • Coût de fabrication estimé : ... €\n  • Prix de vente conseillé (RSP) : ... €\n  • Marge brute visée : ... % (viser 60% à 75%)\n- 🏭 Fournisseurs recommandés :\n  • Option sans stock (POD) : ex. Printify, Gelato, Merchize...\n  • Option stock / blanks de qualité : ex. Stanley/Stella, Rue Porter, Create Fashion Brand, ou usine Alibaba.\n\nCONSEIL STRATÉGIQUE RAPIDE :\nDonne un conseil clé pour tester ce premier produit sans risque financier (ex: précommande, drop limité).\n\nFORMAT :\nStructure claire et très lisible pour Telegram avec emojis, listes à puces et texte percutant."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        1744,
+        160
+      ],
+      "id": "ec652960-6d7d-4d20-bed4-e15cc18fb15e",
+      "name": "recherceh produit gagnant",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yi1xkGxqw7KiuBlx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2096,
+        160
+      ],
+      "id": "032c2162-a4dd-41b8-9338-41e07e3976ef",
+      "name": "retourner le produit gagnant",
+      "webhookId": "430e4b65-08b3-4398-b3e3-917b50d047cf",
+      "credentials": {
+        "telegramApi": {
+          "id": "4d4eWhAxI0FiCy8b",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "analyser les commandes": [
+      {
+        "json": {
+          "content": {
+            "parts": [
+              {
+                "text": "Bonjour ! Voici l'état de votre boutique streetwear :\n\n📊 **Tableau de bord : 0 commande enregistrée pour le moment.**\n\n⚙️ **État du système :** Boutique connectée avec succès à l'API Shopify (prête pour les ventes).\n\n---\n\n### 📈 Simulation / Exemple de tableau de bord\n*Une fois vos premières ventes effectuées, le rapport ressemblera à ceci :*\n\n*   **💰 Chiffre d'affaires total :** 450,00 €\n*   **📦 Nombre de commandes :** 3\n*   **🎟️ Panier moyen :** 150,00 €\n*   **🚚 Statut des livraisons :** 3 expédiées\n\n**🔝 Top articles :**\n1. **T-shirt Oversized \"Urban Core\"** (2 unités)\n2. **Hoodie Heavyweight Black** (1 unité)\n\n---\n\n### 💡 Conseil pour lancer vos premières ventes :\n**Activez la rareté :** Le streetwear repose sur le sentiment d'exclusivité. Annoncez une \"édition limitée\" sur vos réseaux sociaux avec un compte à rebours de 48h. L'urgence est le meilleur moteur de conversion pour votre lancement ! 🚀",
+                "thoughtSignature": "EnEKbwERTTIPT9zbASWYmnjaMTFNhak02V5tqR5t6qbh437Uf7n4CM81nm4uf+HkQBhRh1MQlRylXLKShq+eXfZNkxMgLWb3iFEvjJ3QwOEy4sOi+kRNT9Doyzwch3Svs0aEXl7zDqEiBhoOzDga13rpbg=="
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "recuperer les produits": [
+      {
+        "json": {
+          "id": 7066529235073,
+          "title": "Her Eyes™ - Minimalist Streetwear T-Shirt | Vibe District",
+          "body_html": "<div id=\"SizeChartContainer\">\n<p>HER EYES — A memory you never want to lose.</p>\n<p> </p>\n<p>Some moments stay forever. Some details become unforgettable.</p>\n<p> </p>\n<p>The Her Eyes™ T-Shirt is a minimalist streetwear piece inspired by memories, emotions, and the little things that make someone special.</p>\n<p> </p>\n<p>Designed with a clean aesthetic and a powerful message on the back, created for those who carry stories they never want to forget.</p>\n<p> </p>\n<p>DETAILS:</p>\n<p>• Premium minimalist streetwear design</p>\n<p>• Comfortable unisex fit</p>\n<p>• High-quality printed artwork</p>\n<p>• Soft and lightweight feel</p>\n<p>• Designed for everyday wear</p>\n<p> </p>\n<p>Vibe District creates pieces that represent feelings, memories, and personal stories.</p>\n<p> </p>\n<p>Wear the feeling. Keep the memory.</p>\n<p>🚚 Free shipping included in the price.</p>\n<p>No extra delivery fees at checkout. Your order is prepared and shipped directly to you with care.</p>\n<p><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://ffm-public-artworks.s3.us-east-2.amazonaws.com/merchize-website/description/67bd695279587c79bfdae2e9-size_guide-0-80222-1741659098203.jpeg\" width=\"704\" height=\"404\"></p>\n<table dir=\"ltr\" border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n<colgroup> <col width=\"100\"> <col width=\"100\"> <col width=\"100\"> <col width=\"100\"> <col width=\"100\"> <col width=\"100\"> <col width=\"100\"> </colgroup>\n<tbody>\n<tr>\n<td rowspan=\"2\"><strong>Size</strong></td>\n<td colspan=\"2\"><strong>Width</strong></td>\n<td colspan=\"2\"><strong>Length</strong></td>\n<td colspan=\"2\"><strong>Sleeve Center Back</strong></td>\n</tr>\n<tr>\n<td>Inch</td>\n<td>Cm</td>\n<td>Inch</td>\n<td>Cm</td>\n<td>Inch</td>\n<td>Cm</td>\n</tr>\n<tr>\n<td>S</td>\n<td>18</td>\n<td>45.72</td>\n<td>28</td>\n<td>71.12</td>\n<td>15.13</td>\n<td>38.42</td>\n</tr>\n<tr>\n<td>M</td>\n<td>20</td>\n<td>50.8</td>\n<td>29</td>\n<td>73.66</td>\n<td>16.5</td>\n<td>41.91</td>\n</tr>\n<tr>\n<td>L</td>\n<td>22</td>\n<td>55.88</td>\n<td>30</td>\n<td>76.2</td>\n<td>18</td>\n<td>45.72</td>\n</tr>\n<tr>\n<td>XL</td>\n<td>24</td>\n<td>60.96</td>\n<td>31</td>\n<td>78.74</td>\n<td>19.5</td>\n<td>49.53</td>\n</tr>\n<tr>\n<td>2XL</td>\n<td>26</td>\n<td>66.04</td>\n<td>32</td>\n<td>81.28</td>\n<td>21</td>\n<td>53.34</td>\n</tr>\n<tr>\n<td>3XL</td>\n<td>28</td>\n<td>71.12</td>\n<td>33</td>\n<td>83.82</td>\n<td>22.38</td>\n<td>56.83</td>\n</tr>\n<tr>\n<td>4XL</td>\n<td>30</td>\n<td>76.2</td>\n<td>34</td>\n<td>86.36</td>\n<td>23.63</td>\n<td>60.02</td>\n</tr>\n<tr>\n<td>5XL</td>\n<td>32</td>\n<td>81.28</td>\n<td>35</td>\n<td>88.9</td>\n<td>25</td>\n<td>63.5</td>\n</tr>\n</tbody>\n</table>\n</div>",
+          "vendor": "Merchize",
+          "product_type": "",
+          "created_at": "2026-09-10T21:09:56+01:00",
+          "handle": "classic-unisex-performance-t-shirt-gildan-42000-made-in-us",
+          "updated_at": "2026-09-11T16:05:44+01:00",
+          "published_at": "2026-09-10T21:33:32+01:00",
+          "template_suffix": null,
+          "published_scope": "web",
+          "tags": "streetwear minimalist oversized unisex aesthetic fashion vibe district",
+          "status": "active",
+          "admin_graphql_api_id": "gid://shopify/Product/7066529235073",
+          "variants": [
+            {
+              "id": 40913963548801,
+              "product_id": 7066529235073,
+              "title": "White / M",
+              "price": "34.99",
+              "position": 1,
+              "inventory_policy": "continue",
+              "compare_at_price": null,
+              "option1": "White",
+              "option2": "M",
+              "option3": null,
+              "created_at": "2026-09-10T21:09:58+01:00",
+              "updated_at": "2026-09-11T14:14:21+01:00",
+              "taxable": true,
+              "barcode": null,
+              "fulfillment_service": "manual",
+              "grams": 0,
+              "inventory_management": "shopify",
+              "requires_shipping": true,
+              "sku": "1C-BTM6GD-1789064289X20R5-04BI",
+              "weight": 0,
+              "weight_unit": "g",
+              "inventory_item_id": 43013634130049,
+              "inventory_quantity": 9999,
+              "old_inventory_quantity": 9999,
+              "admin_graphql_api_id": "gid://shopify/ProductVariant/40913963548801",
+              "image_id": null
+            },
+            {
+              "id": 40913963581569,
+              "product_id": 7066529235073,
+              "title": "White / XL",
+              "price": "34.99",
+              "position": 2,
+              "inventory_policy": "continue",
+              "compare_at_price": null,
+              "option1": "White",
+              "option2": "XL",
+              "option3": null,
+              "created_at": "2026-09-10T21:09:58+01:00",
+              "updated_at": "2026-09-11T14:14:21+01:00",
+              "taxable": true,
+              "barcode": null,
+              "fulfillment_service": "manual",
+              "grams": 0,
+              "inventory_management": "shopify",
+              "requires_shipping": true,
+              "sku": "1C-BTM6GD-1789064289X20R5-04BJ",
+              "weight": 0,
+              "weight_unit": "g",
+              "inventory_item_id": 43013634162817,
+              "inventory_quantity": 9999,
+              "old_inventory_quantity": 9999,
+              "admin_graphql_api_id": "gid://shopify/ProductVariant/40913963581569",
+              "image_id": null
+            },
+            {
+              "id": 40913963614337,
+              "product_id": 7066529235073,
+              "title": "White / L",
+              "price": "34.99",
+              "position": 3,
+              "inventory_policy": "continue",
+              "compare_at_price": null,
+              "option1": "White",
+              "option2": "L",
+              "option3": null,
+              "created_at": "2026-09-10T21:09:58+01:00",
+              "updated_at": "2026-09-11T14:14:21+01:00",
+              "taxable": true,
+              "barcode": null,
+              "fulfillment_service": "manual",
+              "grams": 0,
+              "inventory_management": "shopify",
+              "requires_shipping": true,
+              "sku": "1C-BTM6GD-1789064289X20R5-04BK",
+              "weight": 0,
+              "weight_unit": "g",
+              "inventory_item_id": 43013634195585,
+              "inventory_quantity": 9999,
+              "old_inventory_quantity": 9999,
+              "admin_graphql_api_id": "gid://shopify/ProductVariant/40913963614337",
+              "image_id": null
+            },
+            {
+              "id": 40913963647105,
+              "product_id": 7066529235073,
+              "title": "White / 2XL",
+              "price": "36.99",
+              "position": 4,
+              "inventory_policy": "continue",
+              "compare_at_price": null,
+              "option1": "White",
+              "option2": "2XL",
+              "option3": null,
+              "created_at": "2026-09-10T21:09:58+01:00",
+              "updated_at": "2026-09-11T14:14:21+01:00",
+              "taxable": true,
+              "barcode": null,
+              "fulfillment_service": "manual",
+              "grams": 0,
+              "inventory_management": "shopify",
+              "requires_shipping": true,
+              "sku": "1C-BTM6GD-1789064289X20R5-04BL",
+              "weight": 0,
+              "weight_unit": "g",
+              "inventory_item_id": 43013634228353,
+              "inventory_quantity": 9999,
+              "old_inventory_quantity": 9999,
+              "admin_graphql_api_id": "gid://shopify/ProductVariant/40913963647105",
+              "image_id": null
+            },
+            {
+              "id": 40913963679873,
+              "product_id": 7066529235073,
+              "title": "White / 3XL",
+              "price": "38.99",
+              "position": 5,
+              "inventory_policy": "continue",
+              "compare_at_price": null,
+              "option1": "White",
+              "option2": "3XL",
+              "option3": null,
+              "created_at": "2026-09-10T21:09:58+01:00",
+              "updated_at": "2026-09-11T14:14:21+01:00",
+              "taxable": true,
+              "barcode": null,
+              "fulfillment_service": "manual",
+              "grams": 0,
+              "inventory_management": "shopify",
+              "requires_shipping": true,
+              "sku": "1C-BTM6GD-1789064289X20R5-04BM",
+              "weight": 0,
+              "weight_unit": "g",
+              "inventory_item_id": 43013634261121,
+              "inventory_quantity": 9999,
+              "old_inventory_quantity": 9999,
+              "admin_graphql_api_id": "gid://shopify/ProductVariant/40913963679873",
+              "image_id": null
+            }
+          ],
+          "options": [
+            {
+              "id": 9011732807809,
+              "product_id": 7066529235073,
+              "name": "color",
+              "position": 1,
+              "values": [
+                "White"
+              ]
+            },
+            {
+              "id": 9011732840577,
+              "product_id": 7066529235073,
+              "name": "size",
+              "position": 2,
+              "values": [
+                "M",
+                "XL",
+                "L",
+                "2XL",
+                "3XL"
+              ]
+            }
+          ],
+          "images": [
+            {
+              "id": 32112118399105,
+              "alt": null,
+              "position": 1,
+              "product_id": 7066529235073,
+              "created_at": "2026-09-10T22:08:05+01:00",
+              "updated_at": "2026-09-10T22:08:10+01:00",
+              "admin_graphql_api_id": "gid://shopify/MediaImage/24024718868609",
+              "width": 1952,
+              "height": 2146,
+              "src": "https://cdn.shopify.com/s/files/1/0612/0774/0545/files/Gemini_Generated_Image_otw2x6otw2x6otw2.jpg?v=1789074487",
+              "variant_ids": []
+            },
+            {
+              "id": 32112146415745,
+              "alt": null,
+              "position": 2,
+              "product_id": 7066529235073,
+              "created_at": "2026-09-10T22:16:01+01:00",
+              "updated_at": "2026-09-10T22:23:30+01:00",
+              "admin_graphql_api_id": "gid://shopify/MediaImage/24024746885249",
+              "width": 1195,
+              "height": 1316,
+              "src": "https://cdn.shopify.com/s/files/1/0612/0774/0545/files/ChatGPT_Image_10_sept._2026_22_14_06.png?v=1789074962",
+              "variant_ids": []
+            }
+          ],
+          "image": {
+            "id": 32112118399105,
+            "alt": null,
+            "position": 1,
+            "product_id": 7066529235073,
+            "created_at": "2026-09-10T22:08:05+01:00",
+            "updated_at": "2026-09-10T22:08:10+01:00",
+            "admin_graphql_api_id": "gid://shopify/MediaImage/24024718868609",
+            "width": 1952,
+            "height": 2146,
+            "src": "https://cdn.shopify.com/s/files/1/0612/0774/0545/files/Gemini_Generated_Image_otw2x6otw2x6otw2.jpg?v=1789074487",
+            "variant_ids": []
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "analyser les produits": [
+      {
+        "json": {
+          "content": {
+            "parts": [
+              {
+                "text": "Voici l'état actuel de votre inventaire pour le produit **\"Her Eyes™ - Minimalist Streetwear T-Shirt\"**.\n\n### 📦 État des Stocks : Vibe District\n\nActuellement, l'inventaire est configuré en mode **\"Continuer la vente en cas de rupture\"** avec une quantité fixe de **9999 unités** par variante.\n\n| Variante | Prix | Stock | Statut |\n| :--- | :--- | :--- | :--- |\n| **White / M** | 34.99€ | 9999 | ✅ En stock |\n| **White / XL** | 34.99€ | 9999 | ✅ En stock |\n| **White / L** | 34.99€ | 9999 | ✅ En stock |\n| **White / 2XL** | 36.99€ | 9999 | ✅ En stock |\n| **White / 3XL** | 38.99€ | 9999 | ✅ En stock |\n\n---\n\n### 📊 Résumé\n*   **Total d'unités disponibles :** 49 995 unités.\n*   **Alerte rupture :** Aucun article n'est actuellement en situation de rupture ou de stock faible.\n*   **Note technique :** Votre stock est synchronisé via un service manuel ou Print-on-Demand. La valeur \"9999\" indique que votre boutique accepte les commandes illimitées sans gestion de stock physique en temps réel.\n\n---\n\n### 💡 Conseil Logistique\nPuisque vous utilisez le **Print-on-Demand (Merchize)**, veillez à régulièrement vérifier les capacités de production de votre fournisseur, surtout en période de forte demande (ex: fêtes de fin d'année). \n\n**Astuce :** Si vous souhaitez créer un sentiment de rareté (marketing de l'urgence) sur votre site, vous pouvez ajuster manuellement les niveaux de stock sur Shopify pour certaines variantes populaires afin de déclencher des alertes \"Plus que X exemplaires\" sur vos pages produits.",
+                "thoughtSignature": "EnEKbwERTTIPnjXx2QQmEuOzazuW7dbZJzjTTvM92NVy84JYE6J6f1wWGn5EhuCDb8vq7r/Sb2aNkv2voYwjq7QgS8+VJSdXm8xqRpOftditisxej74oP3LEd+WGG3NxyY6Ru/SuMwYnX/lZqxizX27inA=="
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "analyser les ventes": [
+      {
+        "json": {
+          "content": {
+            "parts": [
+              {
+                "text": "📈 **Rapport Financier : 0 vente enregistrée pour le moment.**\n\nPas de panique, c’est le calme avant la tempête. Chaque empire du streetwear a commencé avec une page blanche. Passons en mode conquête.\n\n---\n\n### 🚀 Objectif & Projection de lancement\nPour valider notre *Product-Market Fit* et générer nos premières données, fixons un premier cap réaliste :\n*   **Cible :** 20 commandes\n*   **Panier moyen (AOV) visé :** 45€ (ex: un T-shirt premium + accessoires)\n*   **Objectif CA :** **900€**\n\n---\n\n### 🛠 Stratégie : Déclencher le \"First Sale\"\nPour briser ce zéro, voici les deux leviers prioritaires sur lesquels nous devons agir dès maintenant :\n\n1.  **Opération \"Early Bird\" :** Lancer une offre de bienvenue exclusive sur nos réseaux (Instagram/TikTok). Proposer un code promo **FIRST15** (-15% sur la première commande) valide uniquement pour les 20 premiers clients. Cela crée un sentiment d'urgence et de privilège.\n2.  **Activation via Micro-Influence :** Envoyer nos pièces \"héro\" à 3 profils ciblés (micro-influenceurs streetwear avec fort engagement). Leur demander un unboxing/styling en échange d'un lien traqué. Une recommandation sincère vaut mieux que n'importe quelle publicité impersonnelle au lancement.\n\n**On garde le focus. Le lancement officiel approche, les premiers chiffres vont tomber.** ⚡️",
+                "thoughtSignature": "EnEKbwERTTIPzlueRfQ0Uay5wjY139cW9tqPYO4h4bO1l0NoX5hoDvWwIhtUraPiuFiW8CjAlpvmIxapImrHbd4x6WOl0jbmkQYN6TqPuSKPXrPS9GP0s1RcMegmhpLVw3xyBCDdUWqXYx0YfBwH7wtKkg=="
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Message a model": [
+      {
+        "json": {
+          "content": {
+            "parts": [
+              {
+                "text": "{\n  \"intention\": \"CLIENTS\",\n  \"detail\": \"Demande d'informations ou d'analyse concernant les clients\"\n}",
+                "thoughtSignature": "EnEKbwERTTIPVTkGUllkYFqMNbwBMCmvqYQp6MTTrBeCdpbfv2Ex+/TtAdc/GbE3R8H3X6aTK9jXbMzDRogb5H3vClno7ffgmtQoO5Wlxi0at0cGiFWC35GeQQUpEoTVYmlRajUkCYdOYS+ANfTrfkIxqw=="
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "analyser les clients": [
+      {
+        "json": {
+          "content": {
+            "parts": [
+              {
+                "text": "📈 **Rapport Financier : 0 vente enregistrée pour le moment.**\n\nPas de panique, c’est le calme avant la tempête. Chaque empire du streetwear a commencé avec une page blanche. Passons en mode conquête.\n\n---\n\n### 🚀 Objectif & Projection de lancement\nPour valider notre *Product-Market Fit* et générer nos premières données, fixons un premier cap réaliste :\n*   **Cible :** 20 commandes\n*   **Panier moyen (AOV) visé :** 45€ (ex: un T-shirt premium + accessoires)\n*   **Objectif CA :** **900€**\n\n---\n\n### 🛠 Stratégie : Déclencher le \"First Sale\"\nPour briser ce zéro, voici les deux leviers prioritaires sur lesquels nous devons agir dès maintenant :\n\n1.  **Opération \"Early Bird\" :** Lancer une offre de bienvenue exclusive sur nos réseaux (Instagram/TikTok). Proposer un code promo **FIRST15** (-15% sur la première commande) valide uniquement pour les 20 premiers clients. Cela crée un sentiment d'urgence et de privilège.\n2.  **Activation via Micro-Influence :** Envoyer nos pièces \"héro\" à 3 profils ciblés (micro-influenceurs streetwear avec fort engagement). Leur demander un unboxing/styling en échange d'un lien traqué. Une recommandation sincère vaut mieux que n'importe quelle publicité impersonnelle au lancement.\n\n**On garde le focus. Le lancement officiel approche, les premiers chiffres vont tomber.** ⚡️",
+                "thoughtSignature": "EnEKbwERTTIPzlueRfQ0Uay5wjY139cW9tqPYO4h4bO1l0NoX5hoDvWwIhtUraPiuFiW8CjAlpvmIxapImrHbd4x6WOl0jbmkQYN6TqPuSKPXrPS9GP0s1RcMegmhpLVw3xyBCDdUWqXYx0YfBwH7wtKkg=="
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      }
+    ],
+    "analyser le message": [
+      {
+        "json": {
+          "content": {
+            "parts": [
+              {
+                "text": "📈 **Rapport Financier : 0 vente enregistrée pour le moment.**\n\nPas de panique, c’est le calme avant la tempête. Chaque empire du streetwear a commencé avec une page blanche. Passons en mode conquête.\n\n---\n\n### 🚀 Objectif & Projection de lancement\nPour valider notre *Product-Market Fit* et générer nos premières données, fixons un premier cap réaliste :\n*   **Cible :** 20 commandes\n*   **Panier moyen (AOV) visé :** 45€ (ex: un T-shirt premium + accessoires)\n*   **Objectif CA :** **900€**\n\n---\n\n### 🛠 Stratégie : Déclencher le \"First Sale\"\nPour briser ce zéro, voici les deux leviers prioritaires sur lesquels nous devons agir dès maintenant :\n\n1.  **Opération \"Early Bird\" :** Lancer une offre de bienvenue exclusive sur nos réseaux (Instagram/TikTok). Proposer un code promo **FIRST15** (-15% sur la première commande) valide uniquement pour les 20 premiers clients. Cela crée un sentiment d'urgence et de privilège.\n2.  **Activation via Micro-Influence :** Envoyer nos pièces \"héro\" à 3 profils ciblés (micro-influenceurs streetwear avec fort engagement). Leur demander un unboxing/styling en échange d'un lien traqué. Une recommandation sincère vaut mieux que n'importe quelle publicité impersonnelle au lancement.\n\n**On garde le focus. Le lancement officiel approche, les premiers chiffres vont tomber.** ⚡️",
+                "thoughtSignature": "EnEKbwERTTIPzlueRfQ0Uay5wjY139cW9tqPYO4h4bO1l0NoX5hoDvWwIhtUraPiuFiW8CjAlpvmIxapImrHbd4x6WOl0jbmkQYN6TqPuSKPXrPS9GP0s1RcMegmhpLVw3xyBCDdUWqXYx0YfBwH7wtKkg=="
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      }
+    ],
+    "conseils": [
+      {
+        "json": {
+          "content": {
+            "parts": [
+              {
+                "text": "📈 **Rapport Financier : 0 vente enregistrée pour le moment.**\n\nPas de panique, c’est le calme avant la tempête. Chaque empire du streetwear a commencé avec une page blanche. Passons en mode conquête.\n\n---\n\n### 🚀 Objectif & Projection de lancement\nPour valider notre *Product-Market Fit* et générer nos premières données, fixons un premier cap réaliste :\n*   **Cible :** 20 commandes\n*   **Panier moyen (AOV) visé :** 45€ (ex: un T-shirt premium + accessoires)\n*   **Objectif CA :** **900€**\n\n---\n\n### 🛠 Stratégie : Déclencher le \"First Sale\"\nPour briser ce zéro, voici les deux leviers prioritaires sur lesquels nous devons agir dès maintenant :\n\n1.  **Opération \"Early Bird\" :** Lancer une offre de bienvenue exclusive sur nos réseaux (Instagram/TikTok). Proposer un code promo **FIRST15** (-15% sur la première commande) valide uniquement pour les 20 premiers clients. Cela crée un sentiment d'urgence et de privilège.\n2.  **Activation via Micro-Influence :** Envoyer nos pièces \"héro\" à 3 profils ciblés (micro-influenceurs streetwear avec fort engagement). Leur demander un unboxing/styling en échange d'un lien traqué. Une recommandation sincère vaut mieux que n'importe quelle publicité impersonnelle au lancement.\n\n**On garde le focus. Le lancement officiel approche, les premiers chiffres vont tomber.** ⚡️",
+                "thoughtSignature": "EnEKbwERTTIPzlueRfQ0Uay5wjY139cW9tqPYO4h4bO1l0NoX5hoDvWwIhtUraPiuFiW8CjAlpvmIxapImrHbd4x6WOl0jbmkQYN6TqPuSKPXrPS9GP0s1RcMegmhpLVw3xyBCDdUWqXYx0YfBwH7wtKkg=="
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      }
+    ],
+    "recuperer les produits1": [
+      {
+        "json": {
+          "id": 7066529235073,
+          "title": "Her Eyes™ - Minimalist Streetwear T-Shirt | Vibe District",
+          "body_html": "<div id=\"SizeChartContainer\">\n<p>HER EYES — A memory you never want to lose.</p>\n<p> </p>\n<p>Some moments stay forever. Some details become unforgettable.</p>\n<p> </p>\n<p>The Her Eyes™ T-Shirt is a minimalist streetwear piece inspired by memories, emotions, and the little things that make someone special.</p>\n<p> </p>\n<p>Designed with a clean aesthetic and a powerful message on the back, created for those who carry stories they never want to forget.</p>\n<p> </p>\n<p>DETAILS:</p>\n<p>• Premium minimalist streetwear design</p>\n<p>• Comfortable unisex fit</p>\n<p>• High-quality printed artwork</p>\n<p>• Soft and lightweight feel</p>\n<p>• Designed for everyday wear</p>\n<p> </p>\n<p>Vibe District creates pieces that represent feelings, memories, and personal stories.</p>\n<p> </p>\n<p>Wear the feeling. Keep the memory.</p>\n<p>🚚 Free shipping included in the price.</p>\n<p>No extra delivery fees at checkout. Your order is prepared and shipped directly to you with care.</p>\n<p><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://ffm-public-artworks.s3.us-east-2.amazonaws.com/merchize-website/description/67bd695279587c79bfdae2e9-size_guide-0-80222-1741659098203.jpeg\" width=\"704\" height=\"404\"></p>\n<table dir=\"ltr\" border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n<colgroup> <col width=\"100\"> <col width=\"100\"> <col width=\"100\"> <col width=\"100\"> <col width=\"100\"> <col width=\"100\"> <col width=\"100\"> </colgroup>\n<tbody>\n<tr>\n<td rowspan=\"2\"><strong>Size</strong></td>\n<td colspan=\"2\"><strong>Width</strong></td>\n<td colspan=\"2\"><strong>Length</strong></td>\n<td colspan=\"2\"><strong>Sleeve Center Back</strong></td>\n</tr>\n<tr>\n<td>Inch</td>\n<td>Cm</td>\n<td>Inch</td>\n<td>Cm</td>\n<td>Inch</td>\n<td>Cm</td>\n</tr>\n<tr>\n<td>S</td>\n<td>18</td>\n<td>45.72</td>\n<td>28</td>\n<td>71.12</td>\n<td>15.13</td>\n<td>38.42</td>\n</tr>\n<tr>\n<td>M</td>\n<td>20</td>\n<td>50.8</td>\n<td>29</td>\n<td>73.66</td>\n<td>16.5</td>\n<td>41.91</td>\n</tr>\n<tr>\n<td>L</td>\n<td>22</td>\n<td>55.88</td>\n<td>30</td>\n<td>76.2</td>\n<td>18</td>\n<td>45.72</td>\n</tr>\n<tr>\n<td>XL</td>\n<td>24</td>\n<td>60.96</td>\n<td>31</td>\n<td>78.74</td>\n<td>19.5</td>\n<td>49.53</td>\n</tr>\n<tr>\n<td>2XL</td>\n<td>26</td>\n<td>66.04</td>\n<td>32</td>\n<td>81.28</td>\n<td>21</td>\n<td>53.34</td>\n</tr>\n<tr>\n<td>3XL</td>\n<td>28</td>\n<td>71.12</td>\n<td>33</td>\n<td>83.82</td>\n<td>22.38</td>\n<td>56.83</td>\n</tr>\n<tr>\n<td>4XL</td>\n<td>30</td>\n<td>76.2</td>\n<td>34</td>\n<td>86.36</td>\n<td>23.63</td>\n<td>60.02</td>\n</tr>\n<tr>\n<td>5XL</td>\n<td>32</td>\n<td>81.28</td>\n<td>35</td>\n<td>88.9</td>\n<td>25</td>\n<td>63.5</td>\n</tr>\n</tbody>\n</table>\n</div>",
+          "vendor": "Merchize",
+          "product_type": "",
+          "created_at": "2026-09-10T21:09:56+01:00",
+          "handle": "classic-unisex-performance-t-shirt-gildan-42000-made-in-us",
+          "updated_at": "2026-09-11T16:05:44+01:00",
+          "published_at": "2026-09-10T21:33:32+01:00",
+          "template_suffix": null,
+          "published_scope": "web",
+          "tags": "streetwear minimalist oversized unisex aesthetic fashion vibe district",
+          "status": "active",
+          "admin_graphql_api_id": "gid://shopify/Product/7066529235073",
+          "variants": [
+            {
+              "id": 40913963548801,
+              "product_id": 7066529235073,
+              "title": "White / M",
+              "price": "34.99",
+              "position": 1,
+              "inventory_policy": "continue",
+              "compare_at_price": null,
+              "option1": "White",
+              "option2": "M",
+              "option3": null,
+              "created_at": "2026-09-10T21:09:58+01:00",
+              "updated_at": "2026-09-11T14:14:21+01:00",
+              "taxable": true,
+              "barcode": null,
+              "fulfillment_service": "manual",
+              "grams": 0,
+              "inventory_management": "shopify",
+              "requires_shipping": true,
+              "sku": "1C-BTM6GD-1789064289X20R5-04BI",
+              "weight": 0,
+              "weight_unit": "g",
+              "inventory_item_id": 43013634130049,
+              "inventory_quantity": 9999,
+              "old_inventory_quantity": 9999,
+              "admin_graphql_api_id": "gid://shopify/ProductVariant/40913963548801",
+              "image_id": null
+            },
+            {
+              "id": 40913963581569,
+              "product_id": 7066529235073,
+              "title": "White / XL",
+              "price": "34.99",
+              "position": 2,
+              "inventory_policy": "continue",
+              "compare_at_price": null,
+              "option1": "White",
+              "option2": "XL",
+              "option3": null,
+              "created_at": "2026-09-10T21:09:58+01:00",
+              "updated_at": "2026-09-11T14:14:21+01:00",
+              "taxable": true,
+              "barcode": null,
+              "fulfillment_service": "manual",
+              "grams": 0,
+              "inventory_management": "shopify",
+              "requires_shipping": true,
+              "sku": "1C-BTM6GD-1789064289X20R5-04BJ",
+              "weight": 0,
+              "weight_unit": "g",
+              "inventory_item_id": 43013634162817,
+              "inventory_quantity": 9999,
+              "old_inventory_quantity": 9999,
+              "admin_graphql_api_id": "gid://shopify/ProductVariant/40913963581569",
+              "image_id": null
+            },
+            {
+              "id": 40913963614337,
+              "product_id": 7066529235073,
+              "title": "White / L",
+              "price": "34.99",
+              "position": 3,
+              "inventory_policy": "continue",
+              "compare_at_price": null,
+              "option1": "White",
+              "option2": "L",
+              "option3": null,
+              "created_at": "2026-09-10T21:09:58+01:00",
+              "updated_at": "2026-09-11T14:14:21+01:00",
+              "taxable": true,
+              "barcode": null,
+              "fulfillment_service": "manual",
+              "grams": 0,
+              "inventory_management": "shopify",
+              "requires_shipping": true,
+              "sku": "1C-BTM6GD-1789064289X20R5-04BK",
+              "weight": 0,
+              "weight_unit": "g",
+              "inventory_item_id": 43013634195585,
+              "inventory_quantity": 9999,
+              "old_inventory_quantity": 9999,
+              "admin_graphql_api_id": "gid://shopify/ProductVariant/40913963614337",
+              "image_id": null
+            },
+            {
+              "id": 40913963647105,
+              "product_id": 7066529235073,
+              "title": "White / 2XL",
+              "price": "36.99",
+              "position": 4,
+              "inventory_policy": "continue",
+              "compare_at_price": null,
+              "option1": "White",
+              "option2": "2XL",
+              "option3": null,
+              "created_at": "2026-09-10T21:09:58+01:00",
+              "updated_at": "2026-09-11T14:14:21+01:00",
+              "taxable": true,
+              "barcode": null,
+              "fulfillment_service": "manual",
+              "grams": 0,
+              "inventory_management": "shopify",
+              "requires_shipping": true,
+              "sku": "1C-BTM6GD-1789064289X20R5-04BL",
+              "weight": 0,
+              "weight_unit": "g",
+              "inventory_item_id": 43013634228353,
+              "inventory_quantity": 9999,
+              "old_inventory_quantity": 9999,
+              "admin_graphql_api_id": "gid://shopify/ProductVariant/40913963647105",
+              "image_id": null
+            },
+            {
+              "id": 40913963679873,
+              "product_id": 7066529235073,
+              "title": "White / 3XL",
+              "price": "38.99",
+              "position": 5,
+              "inventory_policy": "continue",
+              "compare_at_price": null,
+              "option1": "White",
+              "option2": "3XL",
+              "option3": null,
+              "created_at": "2026-09-10T21:09:58+01:00",
+              "updated_at": "2026-09-11T14:14:21+01:00",
+              "taxable": true,
+              "barcode": null,
+              "fulfillment_service": "manual",
+              "grams": 0,
+              "inventory_management": "shopify",
+              "requires_shipping": true,
+              "sku": "1C-BTM6GD-1789064289X20R5-04BM",
+              "weight": 0,
+              "weight_unit": "g",
+              "inventory_item_id": 43013634261121,
+              "inventory_quantity": 9999,
+              "old_inventory_quantity": 9999,
+              "admin_graphql_api_id": "gid://shopify/ProductVariant/40913963679873",
+              "image_id": null
+            }
+          ],
+          "options": [
+            {
+              "id": 9011732807809,
+              "product_id": 7066529235073,
+              "name": "color",
+              "position": 1,
+              "values": [
+                "White"
+              ]
+            },
+            {
+              "id": 9011732840577,
+              "product_id": 7066529235073,
+              "name": "size",
+              "position": 2,
+              "values": [
+                "M",
+                "XL",
+                "L",
+                "2XL",
+                "3XL"
+              ]
+            }
+          ],
+          "images": [
+            {
+              "id": 32112118399105,
+              "alt": null,
+              "position": 1,
+              "product_id": 7066529235073,
+              "created_at": "2026-09-10T22:08:05+01:00",
+              "updated_at": "2026-09-10T22:08:10+01:00",
+              "admin_graphql_api_id": "gid://shopify/MediaImage/24024718868609",
+              "width": 1952,
+              "height": 2146,
+              "src": "https://cdn.shopify.com/s/files/1/0612/0774/0545/files/Gemini_Generated_Image_otw2x6otw2x6otw2.jpg?v=1789074487",
+              "variant_ids": []
+            },
+            {
+              "id": 32112146415745,
+              "alt": null,
+              "position": 2,
+              "product_id": 7066529235073,
+              "created_at": "2026-09-10T22:16:01+01:00",
+              "updated_at": "2026-09-10T22:23:30+01:00",
+              "admin_graphql_api_id": "gid://shopify/MediaImage/24024746885249",
+              "width": 1195,
+              "height": 1316,
+              "src": "https://cdn.shopify.com/s/files/1/0612/0774/0545/files/ChatGPT_Image_10_sept._2026_22_14_06.png?v=1789074962",
+              "variant_ids": []
+            }
+          ],
+          "image": {
+            "id": 32112118399105,
+            "alt": null,
+            "position": 1,
+            "product_id": 7066529235073,
+            "created_at": "2026-09-10T22:08:05+01:00",
+            "updated_at": "2026-09-10T22:08:10+01:00",
+            "admin_graphql_api_id": "gid://shopify/MediaImage/24024718868609",
+            "width": 1952,
+            "height": 2146,
+            "src": "https://cdn.shopify.com/s/files/1/0612/0774/0545/files/Gemini_Generated_Image_otw2x6otw2x6otw2.jpg?v=1789074487",
+            "variant_ids": []
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "structurer la reponse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "structurer la reponse": {
+      "main": [
+        [
+          {
+            "node": "distinguer le type de reponse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "distinguer le type de reponse": {
+      "main": [
+        [
+          {
+            "node": "recuperation des commandes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "recuperer les produits",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "recuperer les ventes1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "recuperer les clients",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "analyser le message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "conseils",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recuperation des commandes": {
+      "main": [
+        [
+          {
+            "node": "analyser les commandes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "analyser les commandes": {
+      "main": [
+        [
+          {
+            "node": "repondre au message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recuperer les produits": {
+      "main": [
+        [
+          {
+            "node": "analyser les produits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "analyser les produits": {
+      "main": [
+        [
+          {
+            "node": "repondre au message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recuperer les ventes1": {
+      "main": [
+        [
+          {
+            "node": "analyser les ventes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "analyser les ventes": {
+      "main": [
+        [
+          {
+            "node": "repondre au message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recuperer les clients": {
+      "main": [
+        [
+          {
+            "node": "analyser les clients",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "analyser les clients": {
+      "main": [
+        [
+          {
+            "node": "repondre au message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "analyser le message": {
+      "main": [
+        [
+          {
+            "node": "repondre au message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conseils": {
+      "main": [
+        [
+          {
+            "node": "le choix de passage a l'étape de recherche des produits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "le choix de passage a l'étape de recherche des produits": {
+      "main": [
+        [
+          {
+            "node": "attendre  la reponse de l'utilisateur",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recuperer les produits1": {
+      "main": [
+        [
+          {
+            "node": "distinguer la niche",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "attendre  la reponse de l'utilisateur": {
+      "main": [
+        [
+          {
+            "node": "recuperer les produits1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "distinguer la niche": {
+      "main": [
+        [
+          {
+            "node": "confirmer la niche",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "confirmer la niche": {
+      "main": [
+        [
+          {
+            "node": "recherceh produit gagnant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recherceh produit gagnant": {
+      "main": [
+        [
+          {
+            "node": "retourner le produit gagnant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3f2f7d08-6e0e-4fc1-91d8-89445fd29071",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "41376987dc5a35d8cca2e5ad4a04e0a383b90a40c52bd088ff4a04194be204b1"
+  },
+  "nodeGroups": [],
+  "id": "T90qx8jeUT7pqKKB",
+  "tags": []
+}
