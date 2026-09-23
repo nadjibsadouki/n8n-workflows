@@ -1,0 +1,2285 @@
+{
+  "name": "B2B Lead Enrichment, Scoring & Automated Onboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Contact Us",
+        "formDescription": "Please fill out the below details and we will get back to you shortly !",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name ",
+              "placeholder": "your name goes here",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "Your email goes here",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company Name",
+              "placeholder": "Your company name goes here",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Website",
+              "placeholder": "your company website"
+            },
+            {
+              "fieldLabel": "Job title",
+              "placeholder": "your job title goes here"
+            },
+            {
+              "fieldLabel": "interest area",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "sales"
+                  },
+                  {
+                    "option": "support"
+                  },
+                  {
+                    "option": "partnerships"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -8112,
+        -304
+      ],
+      "id": "f3510e75-615d-49a5-bb27-7493e992c56c",
+      "name": "On new lead received",
+      "webhookId": "d3db64e2-2f7b-476a-91dd-0e9bce1c7ff8"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c6d70626-c8a7-4d01-899f-2b3857778a13",
+              "leftValue": "={{ $json.Email.isEmail() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "74cc30b3-79fd-423a-a3ee-c671907a0cd3",
+              "leftValue": "={{ $json.Email.length }}",
+              "rightValue": 10,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "ff44d01c-14e9-4a4b-8c11-1c6c61a8a4cd",
+              "leftValue": "={{ ![\"fakemail.com\", \"testmail.com\", \"rumail.com\", \"ymail.com\"].includes($json.Email.extractDomain()) }}",
+              "rightValue": "={{ $json.Email.extractDomain() }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -7888,
+        -304
+      ],
+      "id": "a58c7ccb-f565-4141-8ed9-4a9391aaae6c",
+      "name": "Basic email validation"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs",
+          "mode": "list",
+          "cachedResultName": "lead hh",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1608172193,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs/edit#gid=1608172193"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $now }}",
+            "Full Name": "={{ $json[\"Name \"] }}",
+            "Email": "={{ $json.Email }}",
+            "Company": "={{ $json[\"Company Name\"] }}",
+            "Status": "Discarded",
+            "Reason": "basic email validation failed"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Value",
+              "displayName": "Lead Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -7648,
+        -192
+      ],
+      "id": "3451570b-90a7-410a-9dc5-39355d4c79c2",
+      "name": "log iscarded lead-basic email validation failed",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "emailVerifier",
+        "email": "={{ $json.Email }}"
+      },
+      "type": "n8n-nodes-base.hunter",
+      "typeVersion": 1,
+      "position": [
+        -7664,
+        -400
+      ],
+      "id": "3d3254bd-f3ef-43af-92af-320c647f3d95",
+      "name": "verify email adress",
+      "credentials": {
+        "hunterApi": {
+          "id": "3cAoTlQaGupYs6Nc",
+          "name": "Hunter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ea9d1904-a471-454b-ae43-3225857911c3",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "valid",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "8f61a95b-42dc-4329-b9eb-ca1350f820de",
+              "leftValue": "={{ $json.score }}",
+              "rightValue": 20,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -7440,
+        -400
+      ],
+      "id": "16d71bae-90d7-4412-8784-96687419ba36",
+      "name": "3rd party email validation"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs",
+          "mode": "list",
+          "cachedResultName": "lead hh",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1608172193,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs/edit#gid=1608172193"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $now }}",
+            "Full Name": "={{ $json[\"Name \"] }}",
+            "Email": "={{ $json.Email }}",
+            "Company": "={{ $json[\"Company Name\"] }}",
+            "Status": "Discarded",
+            "Reason": "3rd party because of the invalid status of the email email validation failed and/or low email  deliverebality scores"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Value",
+              "displayName": "Lead Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -7216,
+        -272
+      ],
+      "id": "9c3740bf-75b3-40bf-9688-894161de3c80",
+      "name": "log iscarded 3rd part email validation failed1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.hunter.io/v2/email-verifier?email=patrick@stripe.com&api_key=test-api-key",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "={{ $('On new lead received').item.json.Email }}"
+            },
+            {
+              "name": "api_key",
+              "value": "test-api-key"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -7168,
+        -480
+      ],
+      "id": "d2c78822-d3ac-4618-9e67-1a8e8d519e53",
+      "name": "enrich lead information"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appxZHu6BUlP10Kz1",
+          "mode": "list",
+          "cachedResultName": "Untitled Base",
+          "cachedResultUrl": "https://airtable.com/appxZHu6BUlP10Kz1"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblPzAmVSSGHmXyc6",
+          "mode": "list",
+          "cachedResultName": "Contacts",
+          "cachedResultUrl": "https://airtable.com/appxZHu6BUlP10Kz1/tblPzAmVSSGHmXyc6"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -6704,
+        -336
+      ],
+      "id": "30c80568-bdec-4309-8d4a-33f500a63b8a",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "DVrYFbpO2pQa6KKM",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "data.email",
+              "field2": "email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -6928,
+        -336
+      ],
+      "id": "14ba8873-e249-4990-a05a-966480644110",
+      "name": "unifield  enriched profile"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "fields.Email",
+              "field2": "email"
+            }
+          ]
+        },
+        "joinMode": "enrichInput2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -6544,
+        -176
+      ],
+      "id": "a7818ea5-72dd-4066-b2b9-13cbfb420b3d",
+      "name": "unifield  enriched profile with crm data"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.data.email }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notExists",
+                      "singleValue": true
+                    },
+                    "id": "c784602e-14dc-49eb-877d-d26b685bc3bf"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "new customer"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3c0f5373-06ba-4c8f-ab1a-ef82782dfa20",
+                    "leftValue": "={{ $json.fields.total_revenu }}",
+                    "rightValue": "=100000",
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "general"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "59bf46fb-b135-4dff-80c8-99dac852d649",
+                    "leftValue": "={{ $json.fields.total_revenu }}",
+                    "rightValue": 100000,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "vip"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -6320,
+        -176
+      ],
+      "id": "1d452459-8d2e-4291-a9d0-e1d81bde6674",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6c188de-7a8a-4e59-98e6-92adc91a4123",
+              "name": "custommer_type_tag",
+              "value": "new_custommer",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -6096,
+        -336
+      ],
+      "id": "dd0df3e8-e2f2-475c-9b94-4f82133ebf78",
+      "name": "tag_new_custommer"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6c188de-7a8a-4e59-98e6-92adc91a4123",
+              "name": "custommer_type_tag",
+              "value": "general_custommer",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -6032,
+        -176
+      ],
+      "id": "7b7c311c-3aff-49fa-8193-f44a5f9fa2e4",
+      "name": "tag_general_custommer1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6c188de-7a8a-4e59-98e6-92adc91a4123",
+              "name": "custommer_type_tag",
+              "value": "vip_custommer",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -6048,
+        -32
+      ],
+      "id": "4ed31557-7ced-40e0-86eb-7c498c5aa357",
+      "name": "tag vip"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6c188de-7a8a-4e59-98e6-92adc91a4123",
+              "name": "leaderscore",
+              "value": 0,
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -5728,
+        -208
+      ],
+      "id": "f2a74dbd-3d55-4c2c-8e43-a8fa9fd9dc64",
+      "name": "initialise leadscore"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "687c5cc9-0c0f-4c63-bf35-3d373486eacd",
+              "leftValue": "={{ $json.data.score }}",
+              "rightValue": 60,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5504,
+        -208
+      ],
+      "id": "6893fc6c-c7c1-4672-92bd-704005f5311f",
+      "name": "check email confidence"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "486e51a9-67e8-4de0-9e88-bb19e1056003",
+              "name": "leaderscore",
+              "value": "={{ $json.leaderscore +1 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -5264,
+        -384
+      ],
+      "id": "84dcd2dd-ce6c-4eef-94b3-0971d80ec05d",
+      "name": "increment lead score"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d38dbe12-fa33-4ed2-9667-55e27aa6d0c6",
+              "leftValue": "={{[\"US\",\"DE\",\"IN\",\"UK\\n\"]}}",
+              "rightValue": "={{ $json.fields.country }}",
+              "operator": {
+                "type": "array",
+                "operation": "contains",
+                "rightType": "any"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5088,
+        -208
+      ],
+      "id": "644c988a-99f2-475e-8176-c8563ad2fccf",
+      "name": "checking service region"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "486e51a9-67e8-4de0-9e88-bb19e1056003",
+              "name": "leaderscore",
+              "value": "={{ $json.leaderscore +1 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -4816,
+        -368
+      ],
+      "id": "f634eded-99b4-4438-bb90-dcb38fa3c9dc",
+      "name": "increment lead score1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d38dbe12-fa33-4ed2-9667-55e27aa6d0c6",
+              "leftValue": "={{ $json.fields[\"industry \"] }}",
+              "rightValue": "=software",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -4608,
+        -224
+      ],
+      "id": "237215c3-a0d0-40d6-940b-16789aa97dd5",
+      "name": "check industry"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "486e51a9-67e8-4de0-9e88-bb19e1056003",
+              "name": "leaderscore",
+              "value": "={{ $json.leaderscore +1 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -4304,
+        -336
+      ],
+      "id": "1e8dae8a-48df-44a1-a857-ffe968c7b0c7",
+      "name": "increment lead score2"
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of $input.all()) {\n  item.json.lead_type = \"Medium-Value\";\n\n  if (item.json.lead_score == 3)\n    item.json.lead_type = \"High-Value\";\n\n  if (item.json.lead_score < 1)\n    item.json.lead_type = \"Low-Value\";\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4080,
+        -176
+      ],
+      "id": "6e82cb4c-b3cd-49cd-9b42-6a1b521fa46f",
+      "name": "asssint lead value"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.lead_type }}",
+                    "rightValue": "High-Value",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "9ac84e7c-e822-40da-b0ea-55dfc5c1ccfc"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "high value"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "80aac7d2-2717-4eae-9d8f-42b06247fded",
+                    "leftValue": "={{ $json.lead_type }}",
+                    "rightValue": "Medium-Value",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "medium value"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1e1eb820-7086-4a8a-988d-bb6a806696c5",
+                    "leftValue": "={{ $json.lead_type }}",
+                    "rightValue": "low-value",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "low value"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -3856,
+        -176
+      ],
+      "id": "3287cb41-1c8d-4c49-bb01-3fa6c4623540",
+      "name": "route based on lead value"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BQ7ESEA8P",
+          "mode": "id"
+        },
+        "text": "hey new high value has arrrived ! please check out the details  in the pdf uploaded on google drive",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.6,
+      "position": [
+        -2944,
+        -288
+      ],
+      "id": "b26a55ec-7f38-4a90-a073-6e199f00d0c4",
+      "name": "allert account executive",
+      "webhookId": "b7ae22b7-1a05-4985-88b3-026aadd92d0f",
+      "credentials": {
+        "slackApi": {
+          "id": "2rvgMZ8OXNVCl5NZ",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "sadoukinadjib2005@gmail.com",
+          "mode": "list",
+          "cachedResultName": "sadoukinadjib2005@gmail.com"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -2768,
+        -288
+      ],
+      "id": "696948ee-b57c-4a30-acd5-49f058a2963e",
+      "name": "set up a custommer meeting",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "oykHBaynkZcwBzHu",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "days"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -2368,
+        -288
+      ],
+      "id": "454b8f44-b2fa-4d61-89ab-79a1b8b8134d",
+      "name": "Wait",
+      "webhookId": "6c36697b-cbca-4772-9edc-9bfa4d44dc64"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('route based on lead value').item.json.data.email }}",
+        "subject": "welcome to the company !",
+        "message": "hey just reaching out  to welcome you to our newsletter",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -2544,
+        -288
+      ],
+      "id": "f5702e3f-ddf8-4651-a55e-e188cc7cfdd3",
+      "name": "welcome email",
+      "webhookId": "a2551a3e-f611-4def-abba-fed586882004",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Z6a0tLa1LAGg5QJy",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('route based on lead value').item.json.data.email }}",
+        "subject": "welcome to the company !",
+        "message": "hey just reaching out  to welcome you to our newsletter",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -2144,
+        -288
+      ],
+      "id": "657dfa26-2409-47b6-af83-3b884822b1ac",
+      "name": "follow up",
+      "webhookId": "a2551a3e-f611-4def-abba-fed586882004",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Z6a0tLa1LAGg5QJy",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs",
+          "mode": "list",
+          "cachedResultName": "lead hh",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 396335127,
+          "mode": "list",
+          "cachedResultName": "Lead Nurture",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs/edit#gid=396335127"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Full Name": "={{ $json.fields.Name }}",
+            "Email": "={{ $json.fields.Email }}",
+            "Company": "={{ $json.fields.company }}",
+            "Lead Value": "={{ $json.lead_type }}",
+            "Reason for Nurture": "need more research and details"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Value",
+              "displayName": "Lead Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reason for Nurture",
+              "displayName": "Reason for Nurture",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3584,
+        112
+      ],
+      "id": "cee37f5f-20cc-4519-9bbf-ca42771d10f1",
+      "name": "further nuture lead",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs",
+          "mode": "list",
+          "cachedResultName": "lead hh",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1355080349,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs/edit#gid=1355080349"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{$now}}",
+            "Full Name": "={{ $json[\"Full Name\"] }}",
+            "Email": "={{ $json.Email }}",
+            "Company": "={{ $json.Company }}",
+            "Lead Value": "={{ $json[\"Lead Value\"] }}",
+            "Status": "to be burtured",
+            "Reason": "need more research and badnwith for  further lead profile anrachement"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Value",
+              "displayName": "Lead Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3376,
+        128
+      ],
+      "id": "5f72999b-2c47-4cd9-8f3c-2f6f767b74c0",
+      "name": "make an all leads log entry",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs",
+          "mode": "list",
+          "cachedResultName": "lead hh",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1355080349,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs/edit#gid=1355080349"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{$now}}",
+            "Full Name": "={{ $json[\"Full Name\"] }}",
+            "Email": "={{ $json.Email }}",
+            "Company": "={{ $json.Company }}",
+            "Lead Value": "={{ $json[\"Lead Value\"] }}",
+            "Status": "approved",
+            "Reason": "need more research and badnwith for  further lead profile anrachement"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Value",
+              "displayName": "Lead Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1872,
+        -288
+      ],
+      "id": "46c0cb50-e7e5-4c42-a270-f00d0a44a4be",
+      "name": "make an all leads log entry1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "[company_name]",
+              "replaceText": "={{ $('route based on lead value').item.json.fields.company }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[full_name]",
+              "replaceText": "={{ $('route based on lead value').item.json.fields.Name }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[email]",
+              "replaceText": "={{ $('route based on lead value').item.json.fields.Email }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -3360,
+        -576
+      ],
+      "id": "b8934b98-d81d-44ee-b8f5-b2ea5740e357",
+      "name": "replace dynamic data",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "DRhlOLQOcQaCKyVR",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1SstV-MkY5nuay4yFkUlsiihgXvQGKkdWCizKM7Jvs9o",
+          "mode": "list",
+          "cachedResultName": "Qualified_Lead_Brief_Template",
+          "cachedResultUrl": "https://docs.google.com/document/d/1SstV-MkY5nuay4yFkUlsiihgXvQGKkdWCizKM7Jvs9o/edit?usp=drivesdk"
+        },
+        "name": "={{ $json.fields.company }}-{{ $json.fields.Name }}-{{ $json.lead_type }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3584,
+        -576
+      ],
+      "id": "148c9677-071b-4534-8438-218ba4494daf",
+      "name": "copy base template",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8TYqjSFgLrwTYTkx",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.documentId }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data",
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3136,
+        -576
+      ],
+      "id": "adb3e988-79ee-4bab-938a-836443e008be",
+      "name": "dowwnload as pdf",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8TYqjSFgLrwTYTkx",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $('copy base template').item.json.name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "14qWp7ByKnaKi4nNNtvyYq5ZUM1JQk9yD",
+          "mode": "list",
+          "cachedResultName": "DEV_WEB",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/14qWp7ByKnaKi4nNNtvyYq5ZUM1JQk9yD"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2912,
+        -576
+      ],
+      "id": "1338a219-8871-425d-be16-42e81c6c94a3",
+      "name": "upload pdf",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8TYqjSFgLrwTYTkx",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('replace dynamic data').item.json.documentId }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2688,
+        -576
+      ],
+      "id": "73a4a03b-d7b0-4a28-b72c-de272a051e81",
+      "name": "Delete a file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8TYqjSFgLrwTYTkx",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BQF0Y033L",
+          "mode": "id"
+        },
+        "text": "a new profile has been uploaded  for your review and  and further processing",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.6,
+      "position": [
+        -2464,
+        -576
+      ],
+      "id": "107d0ac9-8245-4e7c-81a4-757dcd7e7388",
+      "name": "notify content cordinate",
+      "webhookId": "ed17cd2c-66ab-436c-8d14-07d4476e752a",
+      "credentials": {
+        "slackApi": {
+          "id": "2rvgMZ8OXNVCl5NZ",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "nadjibsadouki92@gmail.com",
+        "subject": "approval required for new medium value lead",
+        "message": "hey kendly review the document  uploaded to the google drive , and provide your guidence for further actions ",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -3488,
+        -80
+      ],
+      "id": "33e25cf7-e49a-4fda-ab23-19b2f319f23f",
+      "name": "send for sales manager approval",
+      "webhookId": "6f35c0ab-1434-4720-81c0-50be98fe398b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Z6a0tLa1LAGg5QJy",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b47dd6a2-e38f-4e80-8d32-aa0f3901aa98",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -3216,
+        -80
+      ],
+      "id": "ef32fd91-6c6c-4d15-bf39-473f38cfb071",
+      "name": "sales manager approved"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs",
+          "mode": "list",
+          "cachedResultName": "lead hh",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1355080349,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/184ll7CxDp2fmQu-wDToEVF7a__qE0yxVsZHTAzdhKNs/edit#gid=1355080349"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{$now}}",
+            "Full Name": "={{ $json[\"Full Name\"] }}",
+            "Email": "={{ $json.Email }}",
+            "Company": "={{ $json.Company }}",
+            "Lead Value": "={{ $json[\"Lead Value\"] }}",
+            "Status": "dissaproved",
+            "Reason": "sales manager did not deem the lead  fit for further processing"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Value",
+              "displayName": "Lead Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2992,
+        -64
+      ],
+      "id": "f5604d8d-d7c4-41d2-b0b7-a13eb98ca39b",
+      "name": "make an all leads log entry2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On new lead received": [
+      {
+        "json": {
+          "Name ": "NADJIB SADOUKI",
+          "Email": "richard@piedpiper.com",
+          "Company Name": "dffjgjgdd",
+          "Website": "dddffff",
+          "Job title": "dddd",
+          "interest area": "sales",
+          "submittedAt": "2026-08-27T05:21:24.568-04:00",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On new lead received": {
+      "main": [
+        [
+          {
+            "node": "Basic email validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic email validation": {
+      "main": [
+        [
+          {
+            "node": "verify email adress",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "log iscarded lead-basic email validation failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "verify email adress": {
+      "main": [
+        [
+          {
+            "node": "3rd party email validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3rd party email validation": {
+      "main": [
+        [
+          {
+            "node": "enrich lead information",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "unifield  enriched profile",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "log iscarded 3rd part email validation failed1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enrich lead information": {
+      "main": [
+        [
+          {
+            "node": "unifield  enriched profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "unifield  enriched profile with crm data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unifield  enriched profile": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "unifield  enriched profile with crm data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "unifield  enriched profile with crm data": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "tag_new_custommer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "tag_general_custommer1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "tag vip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tag_new_custommer": {
+      "main": [
+        [
+          {
+            "node": "initialise leadscore",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tag_general_custommer1": {
+      "main": [
+        [
+          {
+            "node": "initialise leadscore",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tag vip": {
+      "main": [
+        [
+          {
+            "node": "initialise leadscore",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "initialise leadscore": {
+      "main": [
+        [
+          {
+            "node": "check email confidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check email confidence": {
+      "main": [
+        [
+          {
+            "node": "increment lead score",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "checking service region",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "increment lead score": {
+      "main": [
+        [
+          {
+            "node": "checking service region",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "checking service region": {
+      "main": [
+        [
+          {
+            "node": "increment lead score1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "check industry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "increment lead score1": {
+      "main": [
+        [
+          {
+            "node": "check industry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check industry": {
+      "main": [
+        [
+          {
+            "node": "increment lead score2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "asssint lead value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "increment lead score2": {
+      "main": [
+        [
+          {
+            "node": "asssint lead value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "asssint lead value": {
+      "main": [
+        [
+          {
+            "node": "route based on lead value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "route based on lead value": {
+      "main": [
+        [
+          {
+            "node": "allert account executive",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "copy base template",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "copy base template",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "send for sales manager approval",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "further nuture lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "allert account executive": {
+      "main": [
+        [
+          {
+            "node": "set up a custommer meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set up a custommer meeting": {
+      "main": [
+        [
+          {
+            "node": "welcome email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "follow up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "welcome email": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "further nuture lead": {
+      "main": [
+        [
+          {
+            "node": "make an all leads log entry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "follow up": {
+      "main": [
+        [
+          {
+            "node": "make an all leads log entry1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "copy base template": {
+      "main": [
+        [
+          {
+            "node": "replace dynamic data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "replace dynamic data": {
+      "main": [
+        [
+          {
+            "node": "dowwnload as pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dowwnload as pdf": {
+      "main": [
+        [
+          {
+            "node": "upload pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload pdf": {
+      "main": [
+        [
+          {
+            "node": "Delete a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete a file": {
+      "main": [
+        [
+          {
+            "node": "notify content cordinate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send for sales manager approval": {
+      "main": [
+        [
+          {
+            "node": "sales manager approved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sales manager approved": {
+      "main": [
+        [
+          {
+            "node": "allert account executive",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "make an all leads log entry2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b29d6f52-54ca-48f7-9f71-3c79c05ef386",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "41376987dc5a35d8cca2e5ad4a04e0a383b90a40c52bd088ff4a04194be204b1"
+  },
+  "nodeGroups": [],
+  "id": "gvMXcEFg57z4PCL4",
+  "tags": []
+}
