@@ -1,0 +1,2468 @@
+{
+  "name": "AUTOMATED FACELESS VIDEO CREATION",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        128
+      ],
+      "id": "b743f6a7-3ede-4aa3-a5c5-b0e4bfae9268",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs",
+          "mode": "list",
+          "cachedResultName": "PROJET 2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 889361526,
+          "mode": "list",
+          "cachedResultName": "Content Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs/edit#gid=889361526"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Pending"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -160,
+        -16
+      ],
+      "id": "b602d2fc-3c23-449b-91d5-47d24f41f48d",
+      "name": "Fetch new topic",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are creating a YouTube Shorts script based on structured input fields.\n\n🎯 Topic: {{$json.Topic}}\n👥 Target Persona: {{$json.Persona}}\n🎨 Tone: {{$json.Tone}}\n📌 Niche/Domain: {{$json.Niche}}\n📢 CTA Style: {{$json[\"CTA Style\"]}}\n\nPlease write a highly engaging YouTube Shorts script in a first-person voice that follows the best practices of viral short-form content.\n\nThe video must hook the viewer within the first 3–5 seconds, deliver punchy value, and end with a strong CTA or cliffhanger.\n\nYour captions must:\n\n- Follow a Problem → Action → Reward structure.\n- Be aligned with the tone, niche, and persona.\n- Include exactly 5 captions only along with one hook and one CTA.\n- Also include the full script as well as the voiceover and highly optimized for ElevenLabs platform and should not exceed more than 33 seconds at all.\n- Be wild, bold, and emotionally engaging, not corporate or overly polished.\n- Use emojis sparingly (maximum one per caption, only when impactful).\n\n📌 Caption Structure:\n\n1. Hook (Problem/Curiosity): Shocking, hilarious, or bold opening line (e.g. something even Andrew Tate would growl)\n\n2. Action (Tip/Lesson): What to do or what happened\n\n3. Value (Insight/Surprise): Interesting or unexpected point\n\n4. Interrupt (Emotion/Build): Personal or emotional moment\n\n5. CTA or Cliffhanger: Encourage viewer action, matching {{$json[\"CTA Style\"]}}\n\n📄 Output Format:\n\nReturn ONLY a JSON object that exactly follows this structure:\n\n{\n  \"hook\": \"string\",\n  \"caption_1\": \"string\",\n  \"caption_2\": \"string\",\n  \"caption_3\": \"string\",\n  \"caption_4\": \"string\",\n  \"caption_5\": \"string\",\n  \"cta\": \"string\",\n  \"full_script\": \"string\"\n}\n\n⚠️ Do NOT include any extra commentary, markdown formatting, or explanation — return ONLY the JSON.\n\nRemember:\n\nWrite for SHORTS. Keep it sharp, fast-paced, raw, and irresistible to scroll past.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a professional YouTube Shorts scriptwriter with over 15 years of experience, specialized in crafting highly engaging short-form video scripts across multiple tones, niches, and audience personas. You have reverse-engineered the psychology and pacing of 10,000+ high-performing videos (30s to 3m range).\n\n🎯 Your job is to generate one hook, five concise, scroll-stopping captions (5–10 words each), and a CTA at the end following a **Problem → Action → Reward** structure. In addition, generate a full script of the video that will be used as voiceover for the video and highly optimized for ElevenLabs platform. The voiceover script should not exceed more than 35 seconds.\n\n💡 Each of the captions must be standalone, punchy, and templated for video overlay in tools like Creatomate. Write in **first-person voice**, as if the narrator is speaking directly to the viewer.\n\n✅ Follow This Caption Structure:\n\n1. **Hook/Problem:** Shocking, surprising, or funny attention-grabber\n2. **Action:** A relatable tip, command, or lesson\n3. **Value/Insight:** Something unexpected or helpful\n4. **Pattern Interrupt:** Emotional twist or human moment\n5. **Reward/CTA:** A cliffhanger, win, or reason to watch more\n\n🎯 Match tone, pacing, and vocabulary to the assigned **Persona**, **Tone**, and **Niche**.\n\n🚫 No fluff. No long sentences. Emojis: max 1 per caption, only when useful.\n\n---\n\n🔥 Core Traits of a High-Converting YouTube Shorts Script:\n\n1. ⚡ **Strong Hook:** Instantly grabs attention within 3–5 seconds\n2. 🔥 **Emotional Triggers:** Use fear, urgency, desire, curiosity, excitement\n3. 🧠 **Pattern Interrupts:** Rhetorical shifts, humor, or punchy pivots\n4. 🔄 **Seamless Transitions:** Logical, natural progression\n5. 👀 **Cliffhangers:** Tease next idea or leave them curious\n6. 📣 **Smooth CTA:** Relevant call to action or next step\n7. 🎭 **Perspective:** Always written in first-person\n\nYour output should be platform-native, persona-aligned, retention-optimized, and ready to plug into automation pipelines.\n\nTopic: {{$json.Topic}}\nPersona: {{$json.Persona}}\nTone: {{$json.Tone}}\nNiche: {{$json.Niche}}\nCTA Style: {{$json[\"CTA Style\"]}}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        64,
+        -16
+      ],
+      "id": "3fa3fdbd-5080-462c-84a6-381ca6e54fe3",
+      "name": "generate video script and captions"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"hook\": \"I used to waste 4 hours a day on email 😭\",\n  \"caption_1\": \"Then I built an AI assistant in 10 minutes.\",\n  \"caption_2\": \"Now it reads, replies, and summarizes everything.\",\n  \"caption_3\": \"It even tells me what’s urgent and what’s not.\",\n  \"caption_4\": \"No more inbox stress. Just flow.\",\n  \"caption_5\": \"And yes, it’s 100% free to build.\",\n  \"cta\": \"Want the exact workflow? Type 'EMAIL' below 👇\",\n  \"full_script\": \"I used to waste nearly four hours a day just checking and replying to emails. It was draining. Then one day, I built an AI assistant in under 10 minutes using a free tool. It reads all my emails, summarizes them, and even suggests replies. Now I only spend five minutes on my inbox. It even tells me what's urgent. No more stress, just pure productivity. And the best part? It’s completely free. Want the exact workflow I used? Just type 'EMAIL' in the comments and I’ll share it with you!\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        192
+      ],
+      "id": "e2d31419-013f-4c38-8fd2-8150c4ecb104",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:1b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        416,
+        384
+      ],
+      "id": "6c4a1152-c04b-4ac0-b610-8ed6e0a6445f",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "tlDdMJ7KsWv8K7Ul",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        432,
+        -16
+      ],
+      "id": "da07bb35-04bb-4347-b72b-6e0c65248187",
+      "name": "split out caption & scripts"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8e64e0ac-ab3c-4753-80bb-479e4abac8a6",
+              "leftValue": "={{ $json.output.length }}",
+              "rightValue": 100,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        656,
+        -16
+      ],
+      "id": "15049e4c-bc2b-4b76-85ab-0ed324583bc7",
+      "name": "if caption or hook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create an image prompt for the following YouTube Shorts visual scene.\n\n🎯 Topic: {{ $('Fetch Video Topics Manually').item.json.Topic }}\n👥 Persona: {{ $('Fetch Video Topics Manually').item.json.Persona }}\n📌 Niche: {{ $('Fetch Video Topics Manually').item.json.Niche }}\n🧠 Scene Text: {{ $json.output }}\n\nPlease return output in this format:\n\nPrompt:\n\nFirst-person POV GoPro shot [what’s in front of the viewer]\nIn the background, [describe the setting, motion, mood, environment, lighting]\n\nOnly generate ONE prompt for this caption. Make it cinematic, dynamic, and realistic — ready to be used in Qubico/flux1-dev.\n\n---\n\n### 🎬 EXAMPLE OUTPUTS\n\n### 📌 Input:\n- **Topic:** Morning Productivity Hacks\n- **Persona:** Ambitious 20-something entrepreneur\n- **Niche:** Self-Improvement\n- **Caption:** “Woke up at 5 AM. No alarm. Just momentum.”\n\n### ✅ Prompt Output:\n**Prompt:**\nFirst-person POV GoPro shot of hands pulling back blackout curtains to reveal sunrise through high-rise apartment windows.\nIn the background, city skyline glows with soft orange light, birds in motion, coffee brewing in the kitchen, everything is quiet but pulsing with calm energy.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are an expert prompt-generation AI for Qubico/flux1-dev, trained to\nturn short YouTube Shorts captions into detailed, vivid visual prompts\noptimized for **POV-style dynamic storytelling**.\n\n🎥 Your visuals are inspired by first-person GoPro aesthetics – immersive,\nmotion-rich, and realistic.\n\nEach prompt you generate should be tailored to a:\n- 🎯 Persona: {{ $('Fetch Video Topics Manually').item.json.Persona }}\n- 🔍 Niche: {{ $('Fetch Video Topics Manually').item.json.Niche }}\n\n🎨 Your visual prompt output has two parts:\n\n1. **Foreground (POV description):**\n   - Always begin with: `First-person POV GoPro shot...`\n   - Describe what the viewer sees **from their own eyes** (e.g., hands,\n     movement, objects held, etc.)\n   - Add context from the scene like emotions, props, or interaction\n\n2. **Background (environment):**\n   - Begin with: `In the background...`\n   - Set the scene: realistic environment, dynamic lighting, weather,\n     energy, or mood\n   - Add motion, blur, or lighting cues to give it video-like depth\n\n⚠️ Image prompts should avoid character names, brands, logos, or text\noverlays. No direct references to “YouTube” or “video.”\n\n🎥 Add sensory details like motion, texture, lighting, emotion, or visual\ntension to match the **emotional tone** of the caption (e.g., suspense,\njoy, stress, ambition, speed, power, etc.)."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        880,
+        -112
+      ],
+      "id": "c80fa7b0-c705-4d60-ba6f-64c23fac28ac",
+      "name": "gnerate image prompt"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"image_prompt\": \"First-person POV GoPro shot of hands organizing a cluttered desk, pushing aside books and notebooks to create a clean workspace, a pen moving swiftly across an open planner\\nIn the background, a dimly lit college room glows warmly from a desk lamp, scattered notes fluttering in a gentle breeze from an open window, the energy feels focused yet hopeful, with the sounds of faint chatter and distant laughter echoing, signaling a world full of possibilities outside\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        32
+      ],
+      "id": "f738527f-f0c4-4c2b-abf6-4926e3e92ca0",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.piapi.ai/api/v1/task",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"Qubico/flux1-dev\",\n  \"task_type\": \"txt2img\",\n  \"input\": {\n    \"prompt\": \"{{ JSON.stringify($json.output.image_prompt).slice(1, -1) }}\",\n    \"width\": 768,\n    \"height\": 1024\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1248,
+        -112
+      ],
+      "id": "81d65e0a-7d75-4213-8f86-1b3ca54d7d6d",
+      "name": "generate ai images",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ri7s2iraC68ZvXqu",
+          "name": "piapi auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        -112
+      ],
+      "id": "f5081d1a-e97b-4e28-993e-a3244cf00ac5",
+      "name": "wait  for 3 minute for images to generate",
+      "webhookId": "856ecf22-3ddb-4bf0-a083-35bf84bbab98"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.piapi.ai/api/v1/task/{{ $json.data.task_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1712,
+        -112
+      ],
+      "id": "f1376852-5406-4338-a1cb-34d5d258b53f",
+      "name": "fetch image for tasks",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ri7s2iraC68ZvXqu",
+          "name": "piapi auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0baf9811-15f2-49b4-85b3-5916ac886a54",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "failed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1952,
+        -112
+      ],
+      "id": "23111824-c94c-4781-9aa2-58e2555cc703",
+      "name": "check for error in images"
+    },
+    {
+      "parameters": {
+        "errorMessage": "an error occured while generating an image/video in piapi"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        -64
+      ],
+      "id": "a022b1a9-7a7d-49d1-a771-3fed632ba16e",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.piapi.ai/api/v1/task",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"kling\",\n  \"task_type\": \"video_generation\",\n  \"input\": {\n    \"prompt\": \"{{ $json.data.input.prompt }}\",\n    \"negative_prompt\": \"blurry motion, distorted faces, unnatural lighting, over produced, bad quality\",\n    \"cfg_scale\": 0.5,\n    \"duration\": 5,\n    \"mode\": \"std\",\n    \"image_url\": \"{{ $json.data.output.image_url }}\",\n    \"version\": \"1.6\",\n    \"camera_control\": {\n      \"type\": \"simple\",\n      \"config\": {\n        \"horizontal\": 0,\n        \"vertical\": 0,\n        \"pan\": 0,\n        \"tilt\": 0,\n        \"roll\": 0,\n        \"zoom\": 5\n      }\n    }\n  },\n  \"config\": {}\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1248,
+        144
+      ],
+      "id": "5df17b55-786c-4fb1-95d5-76d3008c926f",
+      "name": "generate videos for images",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ri7s2iraC68ZvXqu",
+          "name": "piapi auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        144
+      ],
+      "id": "8657444c-9cd1-46d7-b6b3-a73a0130aa80",
+      "name": "wait 10 minutes for video generation",
+      "webhookId": "2816f472-6390-4dca-a93c-1390baf18508"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.piapi.ai/api/v1/task/{{ $json.data.task_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1712,
+        144
+      ],
+      "id": "b982a7bf-0ed6-478c-8b38-893ee59e5f74",
+      "name": "fetch videos for tasks",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ri7s2iraC68ZvXqu",
+          "name": "piapi auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0baf9811-15f2-49b4-85b3-5916ac886a54",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "failed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1952,
+        144
+      ],
+      "id": "353652b2-2eb5-4cb9-9bb6-8e2215383f92",
+      "name": "if video has errors"
+    },
+    {
+      "parameters": {
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/6EW6Z8IiJRtePnNUNPKW",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "model_id",
+              "value": "eleven_multilingual_v2"
+            },
+            {
+              "name": "output_format",
+              "value": "mp3_44100_128"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1248,
+        400
+      ],
+      "id": "efad9aba-c847-46cc-ae1b-45cba529f0ef",
+      "name": "generate voice overs",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "GgLFDNG3J1dDfmN2",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "writer",
+            "type": "anyone",
+            "allowFileDiscovery": true
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1712,
+        400
+      ],
+      "id": "e1428560-78a5-4919-a002-45c0c2974df7",
+      "name": "set correct file permissions",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8TYqjSFgLrwTYTkx",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Fetch Video Topics Manually').item.json.Topic }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1r3Bey8kLcvC_WJ1D0e47cDYTNUKpTovN",
+          "mode": "list",
+          "cachedResultName": "content",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1r3Bey8kLcvC_WJ1D0e47cDYTNUKpTovN"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1472,
+        400
+      ],
+      "id": "9ef22270-c4b8-48aa-8525-836c1f1f5a1d",
+      "name": "upload audio voiceover",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8TYqjSFgLrwTYTkx",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1063bd7-434d-435c-aab2-d7f01629a99b",
+              "name": "voiceover_url",
+              "value": "={{ $('Upload Audio Voiceover').item.json.webContentLink }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1952,
+        400
+      ],
+      "id": "ae7e76c8-f709-4535-bab2-98a93c99eca6",
+      "name": "extract voiceover url"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c21223c6-ca91-46aa-a18a-6f9099305b8a",
+              "name": "video_url",
+              "value": "={{ $json.data.output.video_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2192,
+        160
+      ],
+      "id": "de8a2531-4173-4c58-854d-87ca7aaf21c8",
+      "name": "exract video url"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2608,
+        336
+      ],
+      "id": "1fb5ed1f-67e6-4d0b-b815-982430623259",
+      "name": "merge audio video captions"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2368,
+        256
+      ],
+      "id": "fbd750ed-4db4-4b12-852c-a53461e74306",
+      "name": "merge video with captions"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "final_video_data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        336
+      ],
+      "id": "b9d04ec9-010e-4e79-bc89-4ebede5f3e91",
+      "name": "generate unfiled single output of urls"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.creatomate.com/v2/renders",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 32f476c75b7a4a21a951d942dd9f495863739d43886af96efcbe7a0cce0d6a1ad60d54b2c59338bf218a3b021a7a9430"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"template_id\": \"f0bb69cb-a2c9-4171-a467-71c4118582df\",\n  \"modifications\": {\n    \"Audio-1.source\": \"{{ $json.final_video_data[7].voiceover_url }}\",\n    \"Video-Hook.source\": \"{{ $json.final_video_data[0].video_url }}\",\n    \"Video-1.source\": \"{{ $json.final_video_data[1].video_url }}\",\n    \"Video-2.source\": \"{{ $json.final_video_data[2].video_url }}\",\n    \"Video-3.source\": \"{{ $json.final_video_data[3].video_url }}\",\n    \"Video-4.source\": \"{{ $json.final_video_data[4].video_url }}\",\n    \"Video-5.source\": \"{{ $json.final_video_data[5].video_url }}\",\n    \"Video-CTA.source\": \"{{ $json.final_video_data[6].video_url }}\",\n    \"Text-Hook.text\": \"{{ $json.final_video_data[0].output }}\",\n    \"Text-1.text\": \"{{ $json.final_video_data[1].output }}\",\n    \"Text-2.text\": \"{{ $json.final_video_data[2].output }}\",\n    \"Text-3.text\": \"{{ $json.final_video_data[3].output }}\",\n    \"Text-4.text\": \"{{ $json.final_video_data[4].output }}\",\n    \"Text-5.text\": \"{{ $json.final_video_data[5].output }}\",\n    \"Text-CTA.text\": \"{{ $json.final_video_data[6].output }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3056,
+        336
+      ],
+      "id": "36650d65-9db3-4590-9b31-d1ffd2e6646f",
+      "name": "generate unifield video using cretatomate"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3280,
+        336
+      ],
+      "id": "0cf0963f-da8c-4387-ace9-4d932e079b02",
+      "name": "wait 5 minutes for final video",
+      "webhookId": "1c95ead2-0fb2-4abe-bedc-1b8550817f4c"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.creatomate.com/v1/renders/{{ $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3440,
+        336
+      ],
+      "id": "6500b5bf-6868-4f4a-870c-4a7168b72b42",
+      "name": "get final video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "GgLFDNG3J1dDfmN2",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3616,
+        336
+      ],
+      "id": "d8cf4717-e9d4-4c77-bb98-89addb87d76a",
+      "name": "download final video"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs",
+          "mode": "list",
+          "cachedResultName": "PROJET 2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 889361526,
+          "mode": "list",
+          "cachedResultName": "Content Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs/edit#gid=889361526"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Video Number": "={{ $('Fetch Video Topics Manually').item.json['Video Number'] }}",
+            "Status": "Done",
+            "Video_URL": "={{ $jsonwebContentLink }}"
+          },
+          "matchingColumns": [
+            "Video Number"
+          ],
+          "schema": [
+            {
+              "id": "Video Number",
+              "displayName": "Video Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tone",
+              "displayName": "Tone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Niche",
+              "displayName": "Niche",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Persona",
+              "displayName": "Persona",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Platform",
+              "displayName": "Platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CTA Style",
+              "displayName": "CTA Style",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Youtube Status",
+              "displayName": "Youtube Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Instagram Status",
+              "displayName": "Instagram Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Video_URL",
+              "displayName": "Video_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4096,
+        592
+      ],
+      "id": "e374f339-f216-449c-815f-68fb826d5761",
+      "name": "update video status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "=shorts video_{{ $json.id }}.mp4",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1N2wiFJvQ6Mo1PfvsyiyKHSJ0IUFCmoL_",
+          "mode": "list",
+          "cachedResultName": "1-Introduction ",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1N2wiFJvQ6Mo1PfvsyiyKHSJ0IUFCmoL_"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3888,
+        592
+      ],
+      "id": "46e703d7-db00-4e70-b94a-1a42d2618a96",
+      "name": "upload the video generated",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8TYqjSFgLrwTYTkx",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8669333294",
+        "text": "=a new reel/shorts video has been created :{{ $json.Video_url }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4320,
+        592
+      ],
+      "id": "f7c20961-6ca0-4d64-bff1-9880b3b50cd5",
+      "name": "notify myself on video stored",
+      "webhookId": "c379c5b4-65ca-485b-b747-f995b26aae6a",
+      "credentials": {
+        "telegramApi": {
+          "id": "4d4eWhAxI0FiCy8b",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "1186703181202426",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "video_url",
+                "value": "={{ $json.url }}"
+              },
+              {
+                "name": "video_type",
+                "value": "REELS"
+              },
+              {
+                "name": "caption",
+                "value": "testing reels feature"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        3856,
+        112
+      ],
+      "id": "ee3c5c51-f682-464a-8e6b-5d052ef0b253",
+      "name": "Post to instagram container",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "nodDLPM1A587ZHtS",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4080,
+        112
+      ],
+      "id": "29087834-6dff-4e35-8573-59726d9b4d98",
+      "name": "Wait",
+      "webhookId": "99068201-b795-47bc-9fad-384eea448b8f"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "8669333294",
+        "message": "=a new reel/shorts video has been created :{{ $('download final video').item.jspn.url ]]\nkindly provide your approval for posting  to instagram",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4304,
+        112
+      ],
+      "id": "2f4ee951-5d19-40bb-9f65-89225c0d74c9",
+      "name": "seek for instagram approval",
+      "webhookId": "6194052e-84ac-4b26-9c92-f11ca629bd8d",
+      "credentials": {
+        "telegramApi": {
+          "id": "4d4eWhAxI0FiCy8b",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5a134e6a-ce03-48d6-a26a-aee8ab590ac1",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4528,
+        112
+      ],
+      "id": "f44843cf-0088-463e-aad2-6089f0ba0e8a",
+      "name": "if instagram approved?"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "1186703181202426",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "media_publish",
+                "value": "={{ $('Post to Instagram Container').item.json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        4752,
+        16
+      ],
+      "id": "af927437-7caa-4ff3-bea0-ea26a843e1d1",
+      "name": "post approved video to instagram",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "nodDLPM1A587ZHtS",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "8669333294",
+        "message": "=a new reel/shorts video has been created :{{ $('download final video').item.jspn.url ]]\nkindly provide your approval for posting  to youtube\n",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3936,
+        336
+      ],
+      "id": "ff3ba883-24e3-4394-96a8-35c035e7f1e1",
+      "name": "seek for youtube approval",
+      "webhookId": "6194052e-84ac-4b26-9c92-f11ca629bd8d",
+      "credentials": {
+        "telegramApi": {
+          "id": "4d4eWhAxI0FiCy8b",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5a134e6a-ce03-48d6-a26a-aee8ab590ac1",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4160,
+        336
+      ],
+      "id": "1fb69165-a1f5-4866-badb-0786a4f8a572",
+      "name": "if youtube approved?"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('get final video').item.json.url  }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        4480,
+        320
+      ],
+      "id": "10f0b57a-73f1-4b23-9df9-492a66fc12cb",
+      "name": "download final video again for youtube"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "new video from n8n",
+        "regionCode": "US",
+        "categoryId": "28",
+        "options": {
+          "description": "this is test description",
+          "privacyStatus": "private"
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        4688,
+        320
+      ],
+      "id": "79aee8bf-8a66-46e3-9230-52b2987fea92",
+      "name": "upload a youtube video",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "DJ650LIfDlSV0dA2",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs",
+          "mode": "list",
+          "cachedResultName": "PROJET 2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 889361526,
+          "mode": "list",
+          "cachedResultName": "Content Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs/edit#gid=889361526"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Video Number": "={{ $('Fetch Video Topics Manually').item.json['Video Number'] }}",
+            "Instagram Status": "rejected by the user"
+          },
+          "matchingColumns": [
+            "Video Number"
+          ],
+          "schema": [
+            {
+              "id": "Video Number",
+              "displayName": "Video Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tone",
+              "displayName": "Tone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Niche",
+              "displayName": "Niche",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Persona",
+              "displayName": "Persona",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Platform",
+              "displayName": "Platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CTA Style",
+              "displayName": "CTA Style",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Youtube Status",
+              "displayName": "Youtube Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Instagram Status",
+              "displayName": "Instagram Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Video_URL",
+              "displayName": "Video_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        5040,
+        192
+      ],
+      "id": "81d02781-4fd6-4a1c-a41c-332f9915b52c",
+      "name": "update video status instagram",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs",
+          "mode": "list",
+          "cachedResultName": "PROJET 2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 889361526,
+          "mode": "list",
+          "cachedResultName": "Content Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs/edit#gid=889361526"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Video Number": "={{ $('Fetch Video Topics Manually').item.json['Video Number'] }}",
+            "Youtube Status": "rejected by the user"
+          },
+          "matchingColumns": [
+            "Video Number"
+          ],
+          "schema": [
+            {
+              "id": "Video Number",
+              "displayName": "Video Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tone",
+              "displayName": "Tone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Niche",
+              "displayName": "Niche",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Persona",
+              "displayName": "Persona",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Platform",
+              "displayName": "Platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CTA Style",
+              "displayName": "CTA Style",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Youtube Status",
+              "displayName": "Youtube Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instagram Status",
+              "displayName": "Instagram Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Video_URL",
+              "displayName": "Video_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4592,
+        560
+      ],
+      "id": "0a65df47-2e77-41de-bd7b-fea2c4d2fe6f",
+      "name": "update video status youtube1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs",
+          "mode": "list",
+          "cachedResultName": "PROJET 2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 889361526,
+          "mode": "list",
+          "cachedResultName": "Content Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs/edit#gid=889361526"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Video Number": "={{ $('Fetch Video Topics Manually').item.json['Video Number'] }}",
+            "Youtube Status": "uploaded"
+          },
+          "matchingColumns": [
+            "Video Number"
+          ],
+          "schema": [
+            {
+              "id": "Video Number",
+              "displayName": "Video Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tone",
+              "displayName": "Tone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Niche",
+              "displayName": "Niche",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Persona",
+              "displayName": "Persona",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Platform",
+              "displayName": "Platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CTA Style",
+              "displayName": "CTA Style",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Youtube Status",
+              "displayName": "Youtube Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instagram Status",
+              "displayName": "Instagram Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Video_URL",
+              "displayName": "Video_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4912,
+        320
+      ],
+      "id": "1024c44a-890b-4d5b-b82b-68bcfef6aefb",
+      "name": "update video status youtube",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs",
+          "mode": "list",
+          "cachedResultName": "PROJET 2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 889361526,
+          "mode": "list",
+          "cachedResultName": "Content Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t-BujxumjwVWa-j0Qg4qO4xphnKSMCWPsklLcnWPPCs/edit#gid=889361526"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Video Number": "={{ $('Fetch Video Topics Manually').item.json['Video Number'] }}",
+            "Instagram Status": "uploaded"
+          },
+          "matchingColumns": [
+            "Video Number"
+          ],
+          "schema": [
+            {
+              "id": "Video Number",
+              "displayName": "Video Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tone",
+              "displayName": "Tone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Niche",
+              "displayName": "Niche",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Persona",
+              "displayName": "Persona",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Platform",
+              "displayName": "Platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CTA Style",
+              "displayName": "CTA Style",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Youtube Status",
+              "displayName": "Youtube Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Instagram Status",
+              "displayName": "Instagram Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Video_URL",
+              "displayName": "Video_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        5024,
+        16
+      ],
+      "id": "73811842-96c8-41dc-81f9-9b7f291793cc",
+      "name": "update video status instagram2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LeLdwwklik6Ndtof",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        16
+      ],
+      "id": "17a5975f-84bf-4de7-b08a-4b554e0c72db",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        -96
+      ],
+      "id": "4da52d96-4289-4be8-b092-6fdf67145100",
+      "name": "Schedule Trigger1"
+    }
+  ],
+  "pinData": {
+    "Fetch new topic": [
+      {
+        "json": {
+          "row_number": 2,
+          "Video Number": 1,
+          "Topic": "3 Hidden Features in ChatGPT You Didn't Know",
+          "Tone": "Informative",
+          "Niche": "AI Tools",
+          "Persona": "Tech-savvy freelancers",
+          "Platform": "YouTube Shorts",
+          "Language": "English",
+          "CTA Style": "Subscribe prompt",
+          "Youtube Status": "Published",
+          "Instagram Status": "Published",
+          "Status": "Pending",
+          "Video_URL": ""
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Fetch new topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch new topic": {
+      "main": [
+        [
+          {
+            "node": "generate video script and captions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "generate video script and captions",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate video script and captions",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "gnerate image prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate video script and captions": {
+      "main": [
+        [
+          {
+            "node": "split out caption & scripts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split out caption & scripts": {
+      "main": [
+        [
+          {
+            "node": "if caption or hook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if caption or hook": {
+      "main": [
+        [
+          {
+            "node": "gnerate image prompt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "merge video with captions",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "generate voice overs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "gnerate image prompt",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gnerate image prompt": {
+      "main": [
+        [
+          {
+            "node": "generate ai images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate ai images": {
+      "main": [
+        [
+          {
+            "node": "wait  for 3 minute for images to generate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wait  for 3 minute for images to generate": {
+      "main": [
+        [
+          {
+            "node": "fetch image for tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetch image for tasks": {
+      "main": [
+        [
+          {
+            "node": "check for error in images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check for error in images": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "generate videos for images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate videos for images": {
+      "main": [
+        [
+          {
+            "node": "wait 10 minutes for video generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wait 10 minutes for video generation": {
+      "main": [
+        [
+          {
+            "node": "fetch videos for tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetch videos for tasks": {
+      "main": [
+        [
+          {
+            "node": "if video has errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if video has errors": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "exract video url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate voice overs": {
+      "main": [
+        [
+          {
+            "node": "upload audio voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload audio voiceover": {
+      "main": [
+        [
+          {
+            "node": "set correct file permissions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set correct file permissions": {
+      "main": [
+        [
+          {
+            "node": "extract voiceover url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "exract video url": {
+      "main": [
+        [
+          {
+            "node": "merge video with captions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract voiceover url": {
+      "main": [
+        [
+          {
+            "node": "merge audio video captions",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "merge video with captions": {
+      "main": [
+        [
+          {
+            "node": "merge audio video captions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "merge audio video captions": {
+      "main": [
+        [
+          {
+            "node": "generate unfiled single output of urls",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate unfiled single output of urls": {
+      "main": [
+        [
+          {
+            "node": "generate unifield video using cretatomate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate unifield video using cretatomate": {
+      "main": [
+        [
+          {
+            "node": "wait 5 minutes for final video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wait 5 minutes for final video": {
+      "main": [
+        [
+          {
+            "node": "get final video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get final video": {
+      "main": [
+        [
+          {
+            "node": "download final video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download final video": {
+      "main": [
+        [
+          {
+            "node": "upload the video generated",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Post to instagram container",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "seek for youtube approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload the video generated": {
+      "main": [
+        [
+          {
+            "node": "update video status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update video status": {
+      "main": [
+        [
+          {
+            "node": "notify myself on video stored",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post to instagram container": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "seek for instagram approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "seek for instagram approval": {
+      "main": [
+        [
+          {
+            "node": "if instagram approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if instagram approved?": {
+      "main": [
+        [
+          {
+            "node": "post approved video to instagram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "update video status instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "seek for youtube approval": {
+      "main": [
+        [
+          {
+            "node": "if youtube approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if youtube approved?": {
+      "main": [
+        [
+          {
+            "node": "download final video again for youtube",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "update video status youtube1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download final video again for youtube": {
+      "main": [
+        [
+          {
+            "node": "upload a youtube video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload a youtube video": {
+      "main": [
+        [
+          {
+            "node": "update video status youtube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "post approved video to instagram": {
+      "main": [
+        [
+          {
+            "node": "update video status instagram2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Fetch new topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "bf0ea1df-c639-43d5-be31-356772adb5b4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "41376987dc5a35d8cca2e5ad4a04e0a383b90a40c52bd088ff4a04194be204b1"
+  },
+  "nodeGroups": [],
+  "id": "HSFngnxXmbZFQLTK",
+  "tags": []
+}
