@@ -1,0 +1,600 @@
+{
+  "name": "AI_ECOMMERCE_CONTENT_FACTORY_V1",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -464,
+        32
+      ],
+      "id": "42cdb872-de71-4520-b1dc-d9aa0685d840",
+      "name": "image received",
+      "webhookId": "89418ea5-90c7-4257-91a6-133bb110872b",
+      "credentials": {
+        "telegramApi": {
+          "id": "PLDgJAfMclZEuSoJ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot8669333294:AAEon9HkdFuWn9L7ZLImS3REUeBdRl_kyIg/getFile?file_id={{ $json.message.photo.slice(-1)[0].file_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "5c1eb603-f74d-4466-a46b-6845ee2c602e",
+      "name": "Get_File_Path."
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot8669333294:AAEon9HkdFuWn9L7ZLImS3REUeBdRl_kyIg/{{ $json.result.file_path }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "3d24a55a-387d-4c1d-9b9e-52396aa3601e",
+      "name": "Download_Image_Binary."
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "text": "=Tu es un directeur marketing e-commerce expert et copywriter d'élite.\nAnalyse l'image du produit fournie en binaire, ainsi que les instructions textuelles et la voix de marque ci-dessous :\n\nInstructions du commerçant : \"{{ $('image received').item.json.message.caption || 'Aucune consigne spécifique' }}\"\nVoix de marque (Brand Voice) : \"{{ $getWorkflowStaticData('global').brandVoice || 'Ton e-commerce conversion standard, punchy et bienveillant' }}\"\n\nGénère un pack marketing complet et exhaustif pour ce produit au format JSON strict (sans balises markdown ```json, uniquement l'objet JSON valide) respectant scrupuleusement la voix de marque et cette structure exacte :\n\n{\n  \"identification\": {\n    \"nom_produit\": \"Nom accrocheur du produit\",\n    \"description_visuelle\": \"Description détaillée de ce qui est visible sur la photo\",\n    \"public_cible\": \"Profil démographique et psychographique précis\",\n    \"pain_points\": [\"Point de douleur 1\", \"Point de douleur 2\", \"Point de douleur 3\"]\n  },\n  \"fiche_produit\": {\n    \"titre_optimise\": \"Titre produit orienté conversion\",\n    \"description\": \"Description produit persuasive et vendeuse\",\n    \"caracteristiques\": [\"Caractéristique 1\", \"Caractéristique 2\", \"Caractéristique 3\"],\n    \"benefices_clients\": [\"Bénéfice 1\", \"Bénéfice 2\", \"Bénéfice 3\"],\n    \"faq\": [\n      {\"question\": \"Question 1\", \"reponse\": \"Réponse 1\"},\n      {\"question\": \"Question 2\", \"reponse\": \"Réponse 2\"}\n    ],\n    \"cta\": \"Appel à l'action principal\"\n  },\n  \"instagram\": [\n    {\"angle\": \"Storytelling\", \"hook\": \"Accroche choc\", \"caption\": \"Texte complet du post\", \"hashtags\": \"#tag1 #tag2 #tag3\", \"cta\": \"Lien en bio\"},\n    {\"angle\": \"Bénéfice direct\", \"hook\": \"Accroche bénéfice\", \"caption\": \"Texte complet du post\", \"hashtags\": \"#tag1 #tag2 #tag3\", \"cta\": \"Commentez INFO\"}\n  ],\n  \"tiktok\": [\n    {\"hook_3s\": \"Hook visuel et verbal 3 sec\", \"script_15s\": \"Script scène par scène 15s\", \"texte_ecran\": \"Textes incrustés\", \"cta\": \"Clique sur le lien\"},\n    {\"hook_3s\": \"Hook problème 3 sec\", \"script_30s\": \"Script scène par scène 30s\", \"texte_ecran\": \"Textes incrustés\", \"cta\": \"Dispo en bio\"}\n  ],\n  \"email_marketing\": {\n    \"sujet\": \"Objet captivant\",\n    \"preheader\": \"Texte d'aperçu de boîte mail\",\n    \"corps\": \"Email complet chaleureux et incitatif\",\n    \"cta\": \"Commander maintenant\"\n  },\n  \"ads_concepts\": [\n    {\"type\": \"Problem/Solution\", \"hook\": \"Hook pub\", \"visuel_recommande\": \"Idée de scène\", \"script\": \"Texte voice-over\", \"cta\": \"Acheter\"},\n    {\"type\": \"UGC\", \"hook\": \"Hook pub UGC\", \"visuel_recommande\": \"Idée de scène facecam\", \"script\": \"Texte voice-over\", \"cta\": \"Profiter de l'offre\"}\n  ],\n  \"prompts_ia\": {\n    \"image_prompts\": [\"Prompt Midjourney/Flux réaliste du produit en situation\", \"Prompt photo studio produit\"],\n    \"video_prompts\": [\"Prompt Runway/Luma scène produit dynamique\"]\n  }\n}",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "6232bf92-414e-4c89-a7dd-0d866535d5fc",
+      "name": "analyze image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "1l8O75SwNrghDYEY",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// On récupère le texte généré par Gemini\nlet rawText = $input.first().json.text || $input.first().json.content.parts[0].text;\n\n// On nettoie les éventuelles balises Markdown invisibles\nlet cleanText = rawText.replace(/```json/gi, '').replace(/```/gi, '').trim();\n\n// On transforme le texte en données utilisables (JSON)\nlet parsedData = JSON.parse(cleanText);\n\n// On retourne le résultat\nreturn [ { json: parsedData } ];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "14626cb5-6525-4831-a68d-082c1d2913c6",
+      "name": "Parse_AI_Output"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('image received').item.json.message.chat.id }}",
+        "text": "=={{ \"🟢 <b>CAMPAGNE MARKETING PRÊTE !</b>\\n\\n\" +\n\"📦 <b>Produit identifié :</b> \" + $json.identification.nom_produit + \"\\n\" +\n\"🎯 <b>Cible :</b> \" + $json.identification.public_cible + \"\\n\\n\" +\n\"━━━━━━━━━━━━━━━━━━━━\\n\" +\n\"🛍️ <b>FICHE PRODUIT</b>\\n\" +\n\"📌 <b>Titre :</b> \" + $json.fiche_produit.titre_optimise + \"\\n\" +\n\"📝 <b>Description :</b>\\n\" + $json.fiche_produit.description + \"\\n\\n\" +\n\"✨ <b>Bénéfices clés :</b>\\n\" + $json.fiche_produit.benefices_clients.map(b => \"• \" + b).join(\"\\n\") + \"\\n\\n\" +\n\"━━━━━━━━━━━━━━━━━━━━\\n\" +\n\"📱 <b>POST INSTAGRAM</b>\\n\" +\n\"🎣 <b>Hook :</b> \" + $json.instagram[0].hook + \"\\n\\n\" +\n$json.instagram[0].caption + \"\\n\\n\" +\n$json.instagram[0].hashtags + \"\\n\\n\" +\n\"━━━━━━━━━━━━━━━━━━━━\\n\" +\n\"🎵 <b>SCRIPT TIKTOK (15s)</b>\\n\" +\n\"⏱️ <b>Hook 3s :</b> \" + $json.tiktok[0].hook_3s + \"\\n\" +\n\"🎬 <b>Script :</b> \" + $json.tiktok[0].script_15s + \"\\n\" +\n\"📲 <b>CTA :</b> \" + $json.tiktok[0].cta + \"\\n\\n\" +\n\"━━━━━━━━━━━━━━━━━━━━\\n\" +\n\"📧 <b>EMAIL DE LANCEMENT</b>\\n\" +\n\"📬 <b>Sujet :</b> \" + $json.email_marketing.sujet + \"\\n\" +\n\"👀 <b>Preheader :</b> \" + $json.email_marketing.preheader + \"\\n\\n\" +\n$json.email_marketing.corps + \"\\n\\n\" +\n\"━━━━━━━━━━━━━━━━━━━━\\n\" +\n\"📢 <b>CONCEPT PUBLICITAIRE (ADS)</b>\\n\" +\n\"🎯 <b>Angle :</b> \" + $json.ads_concepts[0].type + \"\\n\" +\n\"🪝 <b>Hook :</b> \" + $json.ads_concepts[0].hook + \"\\n\" +\n\"🎥 <b>Visuel recommandé :</b> \" + $json.ads_concepts[0].visuel_recommande + \"\\n\\n\" +\n\"🎨 <b>PROMPT IMAGE IA :</b>\\n<code>\" + $json.prompts_ia.image_prompts[0] + \"</code>\" }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "e13bace0-968d-49e7-8026-e055a3837ed1",
+      "name": "Send_Campaign_Telegram",
+      "webhookId": "a3ba45cb-2bd5-4f06-bc4a-7e1dd28c1817",
+      "credentials": {
+        "telegramApi": {
+          "id": "PLDgJAfMclZEuSoJ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "=={{ Boolean($json.message?.photo) }}",
+                    "rightValue": false,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "73934381-6dc0-47de-a9cd-ba89a02bb54f"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "photo received"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0ed8d38f-9f01-4941-bc29-816b17488a36",
+                    "leftValue": "=={{ Boolean($json.message?.text?.startsWith('/brand')) }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Commande /brand"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        144
+      ],
+      "id": "cf921b0e-21ad-4024-86d1-3170c98eb3e2",
+      "name": "Detect_Input_Type"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $json.message.text || '';\n// On retire le préfixe /brand pour garder la consigne\nconst brandVoice = rawText.replace(/^\\/brand\\s*/i, '').trim();\n\n// Sauvegarde dans le workflow static data\nconst staticData = $getWorkflowStaticData('global');\nstaticData.brandVoice = brandVoice;\n\nreturn [{\n  json: {\n    status: 'success',\n    saved_brand: brandVoice,\n    chat_id: $json.message.chat.id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        192
+      ],
+      "id": "785e9a93-267a-499c-92de-797128a38a85",
+      "name": "Save_Brand_Memory"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('image received').item.json.message.chat.id }}",
+        "text": "==✅ Identité de marque mise à jour avec succès :\n\"{{ $json.saved_brand }}\"",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        192
+      ],
+      "id": "34f89ee2-a0e9-457a-aebb-083cb3d0c000",
+      "name": "Send a text message",
+      "webhookId": "ff3a5302-81b5-450a-b262-d28a27172169",
+      "credentials": {
+        "telegramApi": {
+          "id": "PLDgJAfMclZEuSoJ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es un directeur marketing e-commerce d'élite.\nVoici la campagne marketing précédemment générée pour le produit :\n{{ JSON.stringify($getWorkflowStaticData('global').lastCampaign || {}) }}\n\nLe commerçant demande l'ajustement suivant :\n\"{{ $json.message.text }}\"\n\nApplique précisément les modifications demandées. Si la demande ne concerne qu'un élément (ex: TikTok ou Instagram), réponds directement en fournissant la version révisée, claire et prête à l'emploi. Reste percutant et orienté conversion."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        432
+      ],
+      "id": "affae3e1-fde0-436c-ae78-95bea4fbd46b",
+      "name": "Gemini_Feedback_Adjuster",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "1l8O75SwNrghDYEY",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('image received').item.json.message.chat.id }}",
+        "text": "=={{ \"✏️ <b>Mise à jour suite à votre retour :</b>\\n\\n\" + ($json.text || $json.content.parts[0].text) }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        432
+      ],
+      "id": "db6420e5-b6f6-480e-baac-dd49b648d83e",
+      "name": "Send a text message1",
+      "webhookId": "ff3a5302-81b5-450a-b262-d28a27172169",
+      "credentials": {
+        "telegramApi": {
+          "id": "PLDgJAfMclZEuSoJ",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "image received": [
+      {
+        "json": {
+          "update_id": 441197798,
+          "message": {
+            "message_id": 52,
+            "from": {
+              "id": 5227689327,
+              "is_bot": false,
+              "first_name": "…..",
+              "language_code": "fr"
+            },
+            "chat": {
+              "id": 5227689327,
+              "first_name": "…..",
+              "type": "private"
+            },
+            "date": 1789900997,
+            "photo": [
+              {
+                "file_id": "AgACAgQAAxkBAAMzaq-4t8bgz30owW573TzKiIhqfNYAAo4Paxtxq4FRLuhQ1zXCmwsBAAMCAANzAAM9BA",
+                "file_unique_id": "AQADjg9rG3GrgVF4",
+                "file_size": 1544,
+                "width": 82,
+                "height": 90
+              },
+              {
+                "file_id": "AgACAgQAAxkBAAMzaq-4t8bgz30owW573TzKiIhqfNYAAo4Paxtxq4FRLuhQ1zXCmwsBAAMCAANtAAM9BA",
+                "file_unique_id": "AQADjg9rG3GrgVFy",
+                "file_size": 14899,
+                "width": 292,
+                "height": 320
+              },
+              {
+                "file_id": "AgACAgQAAxkBAAMzaq-4t8bgz30owW573TzKiIhqfNYAAo4Paxtxq4FRLuhQ1zXCmwsBAAMCAAN4AAM9BA",
+                "file_unique_id": "AQADjg9rG3GrgVF9",
+                "file_size": 20310,
+                "width": 391,
+                "height": 428
+              }
+            ]
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Get_File_Path.": [
+      {
+        "json": {
+          "ok": true,
+          "result": {
+            "file_id": "AgACAgQAAxkBAAMzaq-4t8bgz30owW573TzKiIhqfNYAAo4Paxtxq4FRLuhQ1zXCmwsBAAMCAAN4AAM9BA",
+            "file_unique_id": "AQADjg9rG3GrgVF9",
+            "file_size": 20310,
+            "file_path": "photos/file_0.jpg"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "analyze image": [
+      {
+        "json": {
+          "content": {
+            "parts": [
+              {
+                "text": "{\n  \"identification\": {\n    \"nom_produit\": \"Lumière d'Ambiance LED Intelligent RGB\",\n    \"description_visuelle\": \"Dispositif d'éclairage LED compact, au design minimaliste et moderne, capable d'émettre un spectre de couleurs riche et dynamique. L'image binaire suggère une technologie de gestion colorimétrique avancée (profil ICC mentionné).\",\n    \"public_cible\": \"Jeunes actifs (20-35 ans), gamers, créateurs de contenu, amateurs de décoration intérieure connectée, cherchant à transformer l'atmosphère de leur espace de vie avec un budget accessible.\",\n    \"pain_points\": [\n      \"Ambiance intérieure terne et peu inspirante\",\n      \"Fatigue visuelle due à un éclairage inadapté\",\n      \"Besoin de personnaliser son espace pour le gaming ou le télétravail\"\n    ]\n  },\n  \"fiche_produit\": {\n    \"titre_optimise\": \"Lumière LED Intelligente RGB : Transformez votre espace en un clin d'œil\",\n    \"description\": \"Redéfinissez votre environnement avec notre lampe LED RGB intelligente. Que ce soit pour une session gaming immersive, une soirée détente cocooning ou pour dynamiser votre setup de travail, cette lampe offre une palette de couleurs infinie. Facile à installer, ultra-compacte et conçue pour durer, elle est l'accessoire indispensable pour ceux qui refusent l'éclairage monotone.\",\n    \"caracteristiques\": [\n      \"Technologie LED haute efficacité énergétique\",\n      \"Spectre RGB complet 16 millions de couleurs\",\n      \"Design ultra-compact et polyvalent\"\n    ],\n    \"benefices_clients\": [\n      \"Crée instantanément une ambiance sur-mesure\",\n      \"Réduit la fatigue visuelle lors des soirées devant les écrans\",\n      \"Design épuré qui s'intègre à tous les styles de décoration\"\n    ],\n    \"faq\": [\n      {\"question\": \"La lampe nécessite-t-elle une application complexe ?\", \"reponse\": \"Non, elle est pensée pour une utilisation intuitive et rapide dès le déballage.\"},\n      {\"question\": \"Peut-on régler l'intensité de la lumière ?\", \"reponse\": \"Oui, le contrôle d'intensité est intégré pour s'adapter parfaitement à vos besoins.\"}\n    ],\n    \"cta\": \"Ajouter au panier et illuminez votre vie\"\n  },\n  \"instagram\": [\n    {\n      \"angle\": \"Storytelling\",\n      \"hook\": \"Ta chambre mérite mieux que cet éclairage classique.\",\n      \"caption\": \"On a tous connu ce moment où l'ambiance ne colle pas à l'humeur. Avec notre lampe RGB, passez du mode 'focus travail' au mode 'soirée ciné' en un clic. Votre espace, vos règles.\",\n      \"hashtags\": \"#DecorationInterieur #SetupGaming #AmbianceLumineuse #DesignModerne\",\n      \"cta\": \"Lien en bio\"\n    },\n    {\n      \"angle\": \"Bénéfice direct\",\n      \"hook\": \"16 millions de couleurs sur ton bureau.\",\n      \"caption\": \"Plus qu'une lampe, un véritable outil de personnalisation. Change l'ambiance de ta pièce instantanément. C'est l'upgrade ultime pour ton setup.\",\n      \"hashtags\": \"#LedLights #SetupInspiration #DecoAddict #Innovation\",\n      \"cta\": \"Commentez INFO\"\n    }\n  ],\n  \"tiktok\": [\n    {\n      \"hook_3s\": \"Arrête de scroller et regarde cette transformation lumineuse !\",\n      \"script_15s\": \"Plan 1 (3s): Chambre sombre. Plan 2 (5s): Allumage de la lampe, changement rapide de couleurs. Plan 3 (7s): Résultat final cosy avec musique tendance.\",\n      \"texte_ecran\": \"AVANT vs APRÈS\",\n      \"cta\": \"Clique sur le lien\"\n    },\n    {\n      \"hook_3s\": \"Ton setup a l'air un peu vide, non ?\",\n      \"script_30s\": \"Introduction au problème du setup terne. Démonstration de la facilité d'installation de la lampe. Gros plan sur les variations de couleurs. Conclusion avec un setup ultra-stylé.\",\n      \"texte_ecran\": \"Le secret d'un setup réussi\",\n      \"cta\": \"Dispo en bio\"\n    }\n  ],\n  \"email_marketing\": {\n    \"sujet\": \"Illuminez votre quotidien 💡\",\n    \"preheader\": \"Découvrez le secret pour changer d'ambiance en 1 seconde.\",\n    \"corps\": \"Bonjour, vous en avez assez de votre éclairage classique ? Il est temps d'ajouter une touche de magie à votre intérieur. Notre nouvelle lampe LED RGB s'adapte à chaque moment de votre journée. Profitez d'une offre exclusive pour nos abonnés cette semaine.\",\n    \"cta\": \"Commander maintenant\"\n  },\n  \"ads_concepts\": [\n    {\n      \"type\": \"Problem/Solution\",\n      \"hook\": \"Marre des éclairages qui agressent les yeux ?\",\n      \"visuel_recommande\": \"Split screen : éclairage néon agressif vs lumière RGB douce et diffuse.\",\n      \"script\": \"Passez à une lumière intelligente qui respecte votre confort visuel tout en sublimant votre déco.\",\n      \"cta\": \"Acheter\"\n    },\n    {\n      \"type\": \"UGC\",\n      \"hook\": \"Le meilleur investissement pour ma chambre sous les 50€.\",\n      \"visuel_recommande\": \"Vidéo facecam d'un utilisateur enthousiaste montrant la lampe en action.\",\n      \"script\": \"J'ai testé cette lampe LED et honnêtement, ça change tout pour mes lives et mes soirées chill.\",\n      \"cta\": \"Profiter de l'offre\"\n    }\n  ],\n  \"prompts_ia\": {\n    \"image_prompts\": [\n      \"Minimalist modern interior with a sleek RGB smart light glowing in soft blue and purple hues, cinematic lighting, 8k resolution.\",\n      \"Professional product photography of a compact LED light device on a clean white desk, high contrast, vibrant color bleed.\"\n    ],\n    \"video_prompts\": [\n      \"Dynamic close-up of a modern smart lamp transitioning smoothly between warm orange and cool violet light, slow motion.\"\n    ]\n  }\n}",
+                "thoughtSignature": "EnEKbwFpFH0TGbJ3B2XfgFUhuvTU5RdWsoSzN8k3ATN7a5TOHaFwH5mKW8cqmZhQSKTCIfTHyVr+lJTULxX9d7yYoCq6K+XLBBBaOXs0R290LaMcnC1tQN2/2/eBlJfSGJHmhLQRGyM+GI4ROcRFji7DSQ=="
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Parse_AI_Output": [
+      {
+        "json": {
+          "identification": {
+            "nom_produit": "Lumière d'Ambiance LED Intelligent RGB",
+            "description_visuelle": "Dispositif d'éclairage LED compact, au design minimaliste et moderne, capable d'émettre un spectre de couleurs riche et dynamique. L'image binaire suggère une technologie de gestion colorimétrique avancée (profil ICC mentionné).",
+            "public_cible": "Jeunes actifs (20-35 ans), gamers, créateurs de contenu, amateurs de décoration intérieure connectée, cherchant à transformer l'atmosphère de leur espace de vie avec un budget accessible.",
+            "pain_points": [
+              "Ambiance intérieure terne et peu inspirante",
+              "Fatigue visuelle due à un éclairage inadapté",
+              "Besoin de personnaliser son espace pour le gaming ou le télétravail"
+            ]
+          },
+          "fiche_produit": {
+            "titre_optimise": "Lumière LED Intelligente RGB : Transformez votre espace en un clin d'œil",
+            "description": "Redéfinissez votre environnement avec notre lampe LED RGB intelligente. Que ce soit pour une session gaming immersive, une soirée détente cocooning ou pour dynamiser votre setup de travail, cette lampe offre une palette de couleurs infinie. Facile à installer, ultra-compacte et conçue pour durer, elle est l'accessoire indispensable pour ceux qui refusent l'éclairage monotone.",
+            "caracteristiques": [
+              "Technologie LED haute efficacité énergétique",
+              "Spectre RGB complet 16 millions de couleurs",
+              "Design ultra-compact et polyvalent"
+            ],
+            "benefices_clients": [
+              "Crée instantanément une ambiance sur-mesure",
+              "Réduit la fatigue visuelle lors des soirées devant les écrans",
+              "Design épuré qui s'intègre à tous les styles de décoration"
+            ],
+            "faq": [
+              {
+                "question": "La lampe nécessite-t-elle une application complexe ?",
+                "reponse": "Non, elle est pensée pour une utilisation intuitive et rapide dès le déballage."
+              },
+              {
+                "question": "Peut-on régler l'intensité de la lumière ?",
+                "reponse": "Oui, le contrôle d'intensité est intégré pour s'adapter parfaitement à vos besoins."
+              }
+            ],
+            "cta": "Ajouter au panier et illuminez votre vie"
+          },
+          "instagram": [
+            {
+              "angle": "Storytelling",
+              "hook": "Ta chambre mérite mieux que cet éclairage classique.",
+              "caption": "On a tous connu ce moment où l'ambiance ne colle pas à l'humeur. Avec notre lampe RGB, passez du mode 'focus travail' au mode 'soirée ciné' en un clic. Votre espace, vos règles.",
+              "hashtags": "#DecorationInterieur #SetupGaming #AmbianceLumineuse #DesignModerne",
+              "cta": "Lien en bio"
+            },
+            {
+              "angle": "Bénéfice direct",
+              "hook": "16 millions de couleurs sur ton bureau.",
+              "caption": "Plus qu'une lampe, un véritable outil de personnalisation. Change l'ambiance de ta pièce instantanément. C'est l'upgrade ultime pour ton setup.",
+              "hashtags": "#LedLights #SetupInspiration #DecoAddict #Innovation",
+              "cta": "Commentez INFO"
+            }
+          ],
+          "tiktok": [
+            {
+              "hook_3s": "Arrête de scroller et regarde cette transformation lumineuse !",
+              "script_15s": "Plan 1 (3s): Chambre sombre. Plan 2 (5s): Allumage de la lampe, changement rapide de couleurs. Plan 3 (7s): Résultat final cosy avec musique tendance.",
+              "texte_ecran": "AVANT vs APRÈS",
+              "cta": "Clique sur le lien"
+            },
+            {
+              "hook_3s": "Ton setup a l'air un peu vide, non ?",
+              "script_30s": "Introduction au problème du setup terne. Démonstration de la facilité d'installation de la lampe. Gros plan sur les variations de couleurs. Conclusion avec un setup ultra-stylé.",
+              "texte_ecran": "Le secret d'un setup réussi",
+              "cta": "Dispo en bio"
+            }
+          ],
+          "email_marketing": {
+            "sujet": "Illuminez votre quotidien 💡",
+            "preheader": "Découvrez le secret pour changer d'ambiance en 1 seconde.",
+            "corps": "Bonjour, vous en avez assez de votre éclairage classique ? Il est temps d'ajouter une touche de magie à votre intérieur. Notre nouvelle lampe LED RGB s'adapte à chaque moment de votre journée. Profitez d'une offre exclusive pour nos abonnés cette semaine.",
+            "cta": "Commander maintenant"
+          },
+          "ads_concepts": [
+            {
+              "type": "Problem/Solution",
+              "hook": "Marre des éclairages qui agressent les yeux ?",
+              "visuel_recommande": "Split screen : éclairage néon agressif vs lumière RGB douce et diffuse.",
+              "script": "Passez à une lumière intelligente qui respecte votre confort visuel tout en sublimant votre déco.",
+              "cta": "Acheter"
+            },
+            {
+              "type": "UGC",
+              "hook": "Le meilleur investissement pour ma chambre sous les 50€.",
+              "visuel_recommande": "Vidéo facecam d'un utilisateur enthousiaste montrant la lampe en action.",
+              "script": "J'ai testé cette lampe LED et honnêtement, ça change tout pour mes lives et mes soirées chill.",
+              "cta": "Profiter de l'offre"
+            }
+          ],
+          "prompts_ia": {
+            "image_prompts": [
+              "Minimalist modern interior with a sleek RGB smart light glowing in soft blue and purple hues, cinematic lighting, 8k resolution.",
+              "Professional product photography of a compact LED light device on a clean white desk, high contrast, vibrant color bleed."
+            ],
+            "video_prompts": [
+              "Dynamic close-up of a modern smart lamp transitioning smoothly between warm orange and cool violet light, slow motion."
+            ]
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "image received": {
+      "main": [
+        [
+          {
+            "node": "Detect_Input_Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_File_Path.": {
+      "main": [
+        [
+          {
+            "node": "Download_Image_Binary.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download_Image_Binary.": {
+      "main": [
+        [
+          {
+            "node": "analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "analyze image": {
+      "main": [
+        [
+          {
+            "node": "Parse_AI_Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse_AI_Output": {
+      "main": [
+        [
+          {
+            "node": "Send_Campaign_Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect_Input_Type": {
+      "main": [
+        [
+          {
+            "node": "Get_File_Path.",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save_Brand_Memory",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gemini_Feedback_Adjuster",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save_Brand_Memory": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini_Feedback_Adjuster": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "73ea49f8-67c4-42eb-b1ff-8a4216a7ad35",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2bca2364a5a2fd627bb2bc6ff05f7e508d933bac53bae877177d72e19b3a6063"
+  },
+  "nodeGroups": [],
+  "id": "TaOo5fpkduWo1sz9",
+  "tags": []
+}
